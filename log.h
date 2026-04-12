@@ -1,6 +1,8 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include <sqlite3.h>
+
 int first_start();
 int first_daily_log();
 int first_budget_log();
@@ -28,6 +30,7 @@ int show_income_logs(int num);
 int update_income();
 
 int check_first_time_run();
+int first_time_data(sqlite3* db);
 
 
 
