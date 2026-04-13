@@ -72,5 +72,13 @@ const char *DB_SCHEMA =
     "    amount_cents INTEGER,"
     "    source       INTEGER,"
     "    notes        TEXT"
+    ");"
+
+    "CREATE TABLE IF NOT EXISTS tasks ("
+    "    id             INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "    name           TEXT,"
+    "    estimated_min  INTEGER,"
+    "    observed_min   INTEGER DEFAULT 0,"
+    "    completed      INTEGER DEFAULT 0"
     ");";
 
