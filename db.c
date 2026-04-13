@@ -22,10 +22,9 @@ int get_subjects(sqlite3* db, Subjects* subjects){
   return 0;
 }
 
-int count_subjects(sqlite3* db){
+int count_rows(sqlite3* db, const char* statement){
   sqlite3_stmt *ppStmt = NULL;
   int count = 0;
-  const char* statement = "SELECT COUNT(*) FROM subjects;";
 
   if (sqlite3_prepare_v2(db, statement, -1, &ppStmt, NULL) != SQLITE_OK){
     fprintf(stderr, "Couldnt count subjects: %s\n", sqlite3_errmsg(db));
