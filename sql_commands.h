@@ -6,5 +6,9 @@ extern const char *first_log;
 extern const char *first_bank_balance;
 extern const char *insert_subjects;
 extern const char *insert_study_session;
+extern const char *insert_task;
+extern const char *update_task_time;
+extern const char *complete_task;
+extern const char *get_incomplete_tasks;
 
 #endif

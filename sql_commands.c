@@ -19,3 +19,15 @@ const char *insert_study_session =
     "mood_before, mood_after, energy_before, focus_rating, subject, "
     "environment, distraction_count, notes) "
     "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+const char *insert_task =
+    "INSERT INTO tasks (name, estimated_min) VALUES (?, ?);";
+
+const char *update_task_time =
+    "UPDATE tasks SET observed_min = observed_min + ? WHERE id = ?;";
+
+const char *complete_task =
+    "UPDATE tasks SET completed = 1 WHERE id = ?;";
+
+const char *get_incomplete_tasks =
+    "SELECT id, name, estimated_min, observed_min FROM tasks WHERE completed = 0;";
