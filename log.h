@@ -2,6 +2,7 @@
 #define LOG_H
 
 #include <sqlite3.h>
+#include "db.h"
 
 int first_start();
 int first_daily_log();
@@ -31,7 +32,7 @@ int update_income();
 
 int check_first_time_run();
 int first_time_data(sqlite3* db);
-
+void free_memory(sqlite3* db, Subjects* subjects, int sub_num);
 
 
 

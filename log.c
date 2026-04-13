@@ -13,10 +13,10 @@ int check_first_time_run(){
   FILE *file = fopen(".appran", "r");
   if (file){
     fclose(file);
-    return 1;
+    return 0;
   } else{
     file = fopen(".appran", "w");
-    return 0;
+    return 1;
   }
 }
 
@@ -44,4 +44,15 @@ int first_time_data(sqlite3* db){
       sub_arr[i][strcspn(sub_arr[i], "\n")] = '\0';
     }
     first_write_into_db(db, arr, sub_arr);
+  return 0;
+}
+
+
+void free_memory(sqlite3* db, Subjects* subjects, int sub_num){
+  sqlite3_close(db);
+  
+  for (int i = 0; i < sub_num; i++){
+    free(subjects[i].subject);
+  }
+  free(subjects);
 }

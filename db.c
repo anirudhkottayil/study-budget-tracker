@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "schema.h"
+#include "sql_commands.h"
 
 int get_subjects(sqlite3* db, Subjects* subjects){
   sqlite3_stmt *ppStmt = NULL;
@@ -11,12 +12,14 @@ int get_subjects(sqlite3* db, Subjects* subjects){
   while (sqlite3_step(ppStmt) == SQLITE_ROW) {
       subjects[i].id = sqlite3_column_int (ppStmt, 0);
       subjects[i].subject = malloc(sizeof(char) * 50);
-      strncpy(subjects[i].subject, sqlite3_column_text(ppStmt, 1), 49);
+      strncpy(subjects[i].subject,(const char*) sqlite3_column_text(ppStmt, 1), 49);
       subjects[i].subject[49] = '\0'; 
       i++;
   }
 
   sqlite3_finalize(ppStmt);
+
+  return 0;
 }
 
 int count_subjects(sqlite3* db){
@@ -48,7 +51,7 @@ int initialize_db(sqlite3 **db){
   } else {return 0;}
 }
 
-int sql_command_exec(sqlite3 *db, char* tablename, char* command, int** arr, char* text){
+int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr, int arr_length, char* text){
   sqlite3_stmt *ppStmt = NULL;
   const char *pZtail = NULL;
   const char* sql = command;
@@ -56,6 +59,13 @@ int sql_command_exec(sqlite3 *db, char* tablename, char* command, int** arr, cha
   while( sql[0] != '\0') {
     rc = sqlite3_prepare_v2(db,sql, -1,&ppStmt, &pZtail);
     if (rc != SQLITE_OK){ return rc; }
+
+    int i;
+    for (i = 0; i < arr_length; i++){
+      sqlite3_bind_int(ppStmt, i+1, arr[i]);
+    }
+    int text_len = text ? strlen(text) : 0;
+    sqlite3_bind_text(ppStmt, i+1, text, text_len, SQLITE_STATIC);
 
     if (ppStmt != NULL){
       rc = sqlite3_step(ppStmt);
@@ -66,12 +76,6 @@ int sql_command_exec(sqlite3 *db, char* tablename, char* command, int** arr, cha
     sql = pZtail;
   }
   return SQLITE_OK;
-}
-
-int insert_into_db(sqlite3 *db, char* tablename, int** arr, char* text){
-  if (strcmp(tablename, "daily_log") == 0){
-    sql_command_exec(db, tablename, insert_daily_log, arr, text);
-  }
 }
 
 int first_run(sqlite3 *db){
