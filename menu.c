@@ -25,7 +25,7 @@ int main_menu(int* in_study){
   return user_input;
 }
 
-int get_study_info(int* arr,Subjects* subjects, int sub_num, char notes[]){
+int get_study_info(int* arr,Subjects* subjects, int* sub_num, char notes[]){
   const char* environments[] = {"Desk", "Bed", "Couch", "Kitchen Table", "Work Table"};
   int env_count = 5;
   printf("How was the mood before the sesh (1 to 5)\n");
@@ -39,7 +39,7 @@ int get_study_info(int* arr,Subjects* subjects, int sub_num, char notes[]){
   printf("Which subject did you study\n");
   printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
   printf("|-----|----------------------|\n");
-  for (int i = 0; i < sub_num; i++){
+  for (int i = 0; i < *sub_num; i++){
       printf("| %-3d | %-20s |\n", subjects[i].id, subjects[i].subject);
   }
   scanf("%d",&arr[7]);
@@ -60,7 +60,7 @@ int get_study_info(int* arr,Subjects* subjects, int sub_num, char notes[]){
   
 }
 
-int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects* subjects, int sub_num) {
+int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects* subjects, int* sub_num) {
   int arr[10];
   arr[0] = *study_start;
   arr[1] = *study_stop;
@@ -77,7 +77,7 @@ int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_s
   return 0;
 }
 
-int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects* subjects, int sub_num){
+int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects* subjects, int* sub_num){
   int user_input = 0;
   time_t start, stop;
   while (1){
@@ -105,6 +105,7 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
       stop = time(NULL);
       *study_stop = (int)stop;
       *in_study = 0;
+      int rc = post_study_session(db, in_study, study_start, study_stop, distraction_count, subjects, sub_num); 
       *distraction_count = 0;
     } else if (user_input == 4 && *in_study == 1){
       (*distraction_count)++;
