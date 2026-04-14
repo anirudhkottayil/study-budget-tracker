@@ -5,9 +5,9 @@
 #include "log.h"
 #include "db.h"
 
-int first_start(){
-  // Get date of previous day daily log
-}
+// int first_start(){
+//   // Get date of previous day daily log
+// }
 
 int check_first_time_run(){
   FILE *file = fopen(".appran", "r");

@@ -88,7 +88,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   return 0;
 }
 
-int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects** subjects, int* sub_num) {
+int post_study_session(sqlite3*db, int* study_start, int* study_stop, int* distraction_count, Subjects** subjects, int* sub_num) {
   int arr[10];
   arr[0] = *study_start;
   arr[1] = *study_stop;
@@ -96,6 +96,10 @@ int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_s
   arr[9] = *distraction_count;
   char notes[500];
   int rc = get_study_info(arr, subjects, sub_num, notes);
+  if (rc){
+    fprintf(stderr, "Failed to get post study info");
+    return 1;
+  }
   int insert_result = sql_command_exec(db, "study_sessions", insert_study_session, arr, 10, notes);
   if (insert_result){
     fprintf(stderr, "Failed to insert into study sessions");
@@ -133,7 +137,11 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
       stop = time(NULL);
       *study_stop = (int)stop;
       *in_study = 0;
-      int rc = post_study_session(db, in_study, study_start, study_stop, distraction_count, subjects, sub_num); 
+      int rc = post_study_session(db, study_start, study_stop, distraction_count, subjects, sub_num); 
+      if (rc){
+        fprintf(stderr, "Study session insert failed");
+        return 1;
+      }
       rc = get_study_task(db, task,num_tasks, *study_stop - *study_start);
       *distraction_count = 0;
     } else if (user_input == 4 && *in_study == 1){
