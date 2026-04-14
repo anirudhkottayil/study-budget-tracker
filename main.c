@@ -23,11 +23,11 @@ int main(){
     if (rc) { return 1; }
   }
   
-  int num_subjects = count_rows(db, "SELECT COUNT(*) FROM subjects;");
+  int num_subjects = count_rows(db, count_subjects);
   Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
-  rc = get_rows(db, "SELECT id, name FROM subjects;", (void*) subjects, map_subject);
+  rc = get_rows(db, get_subjects , (void*) subjects, map_subject);
 
-  int num_tasks = count_rows(db, "SELECT COUNT(*) FROM tasks WHERE completed = 0;");
+  int num_tasks = count_rows(db, count_tasks);
   Task* tasks = malloc(num_tasks * sizeof(Task));
   rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks);
 

@@ -31,3 +31,9 @@ const char *complete_task =
 
 const char *get_incomplete_tasks =
     "SELECT id, name, estimated_min, observed_min FROM tasks WHERE completed = 0;";
+
+const char* count_subjects = "SELECT COUNT(*) FROM subjects;";
+
+const char* count_tasks = "SELECT COUNT(*) FROM tasks WHERE completed = 0;";
+
+const char* get_subjects = "SELECT id, name FROM subjects;";

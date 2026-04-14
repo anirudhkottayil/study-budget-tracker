@@ -10,5 +10,7 @@ extern const char *insert_task;
 extern const char *update_task_time;
 extern const char *complete_task;
 extern const char *get_incomplete_tasks;
-
+extern const char *count_subjects;
+extern const char *count_tasks;
+extern const char *get_subjects;
 #endif
