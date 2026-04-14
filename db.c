@@ -63,8 +63,11 @@ int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr
     for (i = 0; i < arr_length; i++){
       sqlite3_bind_int(ppStmt, i+1, arr[i]);
     }
-    int text_len = text ? strlen(text) : 0;
-    sqlite3_bind_text(ppStmt, i+1, text, text_len, SQLITE_STATIC);
+    if (text != NULL){
+      int text_len = text ? strlen(text) : 0;
+      sqlite3_bind_text(ppStmt, i+1, text, text_len, SQLITE_STATIC);
+
+    }
 
     if (ppStmt != NULL){
       rc = sqlite3_step(ppStmt);

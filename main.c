@@ -36,7 +36,7 @@ int main(){
 
     if (user_input == 1) {
       menu_check = study_menu(db, &in_study, &study_start,
-                              &study_stop, &distraction_count, &subjects, &num_subjects);
+                              &study_stop, &distraction_count, &subjects, &num_subjects, &tasks, &num_tasks);
       if (menu_check){
         loop = 0;
       }

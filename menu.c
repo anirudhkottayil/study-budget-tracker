@@ -40,7 +40,7 @@ int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
   printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
   printf("|-----|----------------------|\n");
   for (int i = 0; i < *sub_num; i++){
-      printf("| %-3d | %-20s |\n", subjects[i]->id, subjects[i]->subject);
+      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
   }
   scanf("%d",&arr[7]);
   printf("| %-3s | %-15s |\n", "ID", "ENVIRONMENT");
@@ -60,6 +60,34 @@ int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
   
 }
 
+int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
+  int arr[3]; int rc; int fin_task;
+  printf("Which task did you work on\n");
+  printf("| %-3s | %-20s |\n", "ID", "TASK");
+  printf("|-----|----------------------|\n");
+  for (int i = 0; i < *task_num; i++){
+      printf("| %-3d | %-20s |\n",(*tasks)[i].id,(*tasks)[i].task);
+  }
+  scanf("%d",&arr[1]);
+  arr[0] = (int)duration/60;
+  getchar();
+
+  rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL);
+
+  if (rc) return -1;
+
+  printf("Did you finish the task ? (1 if yes)\n");
+  scanf("%d",&fin_task);
+
+  if (fin_task){
+    arr[0] = 1;
+    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL);
+    if (rc) return -1;
+  }
+
+  return 0;
+}
+
 int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects** subjects, int* sub_num) {
   int arr[10];
   arr[0] = *study_start;
@@ -77,7 +105,7 @@ int post_study_session(sqlite3*db, int* in_study, int* study_start, int* study_s
   return 0;
 }
 
-int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects** subjects, int* sub_num){
+int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, int* distraction_count, Subjects** subjects, int* sub_num, Task** task, int* num_tasks){
   int user_input = 0;
   time_t start, stop;
   while (1){
@@ -106,6 +134,7 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
       *study_stop = (int)stop;
       *in_study = 0;
       int rc = post_study_session(db, in_study, study_start, study_stop, distraction_count, subjects, sub_num); 
+      rc = get_study_task(db, task,num_tasks, *study_stop - *study_start);
       *distraction_count = 0;
     } else if (user_input == 4 && *in_study == 1){
       (*distraction_count)++;
