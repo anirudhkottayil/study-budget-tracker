@@ -32,7 +32,7 @@ int update_income();
 
 int check_first_time_run();
 int first_time_data(sqlite3* db);
-void free_memory(sqlite3* db, Subjects* subjects, int sub_num);
+void free_memory(sqlite3* db, Subjects* subjects,Task* task);
 
 
 

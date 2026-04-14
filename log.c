@@ -48,11 +48,8 @@ int first_time_data(sqlite3* db){
 }
 
 
-void free_memory(sqlite3* db, Subjects* subjects, int sub_num){
+void free_memory(sqlite3* db, Subjects* subjects, Task* task){
   sqlite3_close(db);
-  
-  for (int i = 0; i < sub_num; i++){
-    free(subjects[i].subject);
-  }
   free(subjects);
+  free(task);
 }

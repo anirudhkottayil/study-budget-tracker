@@ -26,10 +26,17 @@ int main(){
   int num_subjects = count_rows(db, count_subjects);
   Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
   rc = get_rows(db, get_subjects , (void*) subjects, map_subject);
+  if (rc){
+    sqlite3_close(db);
+    free(subjects);
+  }
 
   int num_tasks = count_rows(db, count_tasks);
   Task* tasks = malloc(num_tasks * sizeof(Task));
   rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks);
+  if (rc){
+    free_memory(db, subjects, tasks);
+  }
 
   while (loop == -1){
     user_input = main_menu(&in_study);
@@ -56,6 +63,6 @@ int main(){
     }
   }
 
-  free_memory(db, subjects,num_subjects);
+  free_memory(db, subjects, tasks);
   return 0;
 }
