@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include "mapper_func.h"
 #include <string.h>
 #include <stdlib.h>
 #include "db.h"
 #include "log.h"
 #include "menu.h"
+#include "sql_commands.h"
 
 int main(){
   sqlite3 *db;
@@ -21,9 +23,13 @@ int main(){
     if (rc) { return 1; }
   }
   
-  int num_subjects = count_subjects(db);
+  int num_subjects = count_rows(db, "SELECT COUNT(*) FROM subjects;");
   Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
-  rc = get_subjects(db, subjects);
+  rc = get_rows(db, "SELECT id, name FROM subjects;", (void*) subjects, map_subject);
+
+  int num_tasks = count_rows(db, "SELECT COUNT(*) FROM tasks WHERE completed = 0;");
+  Task* tasks = malloc(num_tasks * sizeof(Task));
+  rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks);
 
   while (loop == -1){
     user_input = main_menu(&in_study);

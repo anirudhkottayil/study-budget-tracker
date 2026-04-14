@@ -5,21 +5,21 @@
 #include "schema.h"
 #include "sql_commands.h"
 
-int get_subjects(sqlite3* db, Subjects* subjects){
+int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper){
   sqlite3_stmt *ppStmt = NULL;
-  sqlite3_prepare_v2(db, "SELECT id, name FROM subjects;", -1, &ppStmt, NULL);
-  int i = 0;
-  while (sqlite3_step(ppStmt) == SQLITE_ROW) {
-      subjects[i].id = sqlite3_column_int (ppStmt, 0);
-      subjects[i].subject = malloc(sizeof(char) * 50);
-      strncpy(subjects[i].subject,(const char*) sqlite3_column_text(ppStmt, 1), 49);
-      subjects[i].subject[49] = '\0'; 
-      i++;
+  if (sqlite3_prepare_v2(db, statement, -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Couldn't get rows: %s\n", sqlite3_errmsg(db));
+    return -1;
   }
 
+  int i = 0;
+  while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+    mapper(ppStmt, arr, i);
+    i++;
+  }
   sqlite3_finalize(ppStmt);
 
-  return 0;
+  return i;
 }
 
 int count_rows(sqlite3* db, const char* statement){
