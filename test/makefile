@@ -13,6 +13,7 @@ run: test
 	./test_runner
 
 clean:
-	rm -f test_runner
+	rm -f test_runner 
+	rm -rf test_runner.dSYM
 
 .PHONY: run clean
