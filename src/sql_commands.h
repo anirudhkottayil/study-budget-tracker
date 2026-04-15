@@ -13,4 +13,8 @@ extern const char *get_incomplete_tasks;
 extern const char *count_subjects;
 extern const char *count_tasks;
 extern const char *get_subjects;
+extern const char *count_daily_logs;
+extern const char* get_n_logs;
+extern const char* get_log;
+extern const char* update_daily_log;
 #endif

@@ -1,10 +1,11 @@
 #include <stdio.h>
-#include "mapper_func.h"
 #include <string.h>
 #include <stdlib.h>
+#include "mapper_func.h"
+#include "daily_log_menu.h"
 #include "db.h"
 #include "log.h"
-#include "menu.h"
+#include "study_menu.h"
 #include "sql_commands.h"
 
 int main(){
@@ -25,7 +26,7 @@ int main(){
   
   int num_subjects = count_rows(db, count_subjects);
   Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
-  rc = get_rows(db, get_subjects , (void*) subjects, map_subject);
+  rc = get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
   if (rc){
     sqlite3_close(db);
     free(subjects);
@@ -33,7 +34,7 @@ int main(){
 
   int num_tasks = count_rows(db, count_tasks);
   Task* tasks = malloc(num_tasks * sizeof(Task));
-  rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks);
+  rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks, NULL, 0);
   if (rc){
     free_memory(db, subjects, tasks);
   }
@@ -44,10 +45,11 @@ int main(){
     if (user_input == 1) {
       menu_check = study_menu(db, &in_study, &study_start,
                               &study_stop, &distraction_count, &subjects, &num_subjects, &tasks, &num_tasks);
-      if (menu_check){
-        loop = 0;
-      }
+      if (menu_check) loop = 0;
+
     } else if (user_input == 2){
+      menu_check = daily_log_menu(db, &in_study);
+      if (menu_check) loop = 0;
 
     } else if (user_input == 3){
 

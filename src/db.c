@@ -5,11 +5,35 @@
 #include "schema.h"
 #include "sql_commands.h"
 
-int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper){
+
+int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date){
+
   sqlite3_stmt *ppStmt = NULL;
   if (sqlite3_prepare_v2(db, statement, -1, &ppStmt, NULL) != SQLITE_OK){
     fprintf(stderr, "Couldn't get rows: %s\n", sqlite3_errmsg(db));
     return -1;
+  }
+
+  sqlite3_bind_text(ppStmt, 1, date, -1, SQLITE_STATIC);
+
+  if (sqlite3_step(ppStmt) == SQLITE_ROW)
+    mapper(ppStmt, arr, 0);
+
+  
+  sqlite3_finalize(ppStmt);
+  return 0;
+
+}
+
+int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, int* params, int param_length){
+  sqlite3_stmt *ppStmt = NULL;
+  if (sqlite3_prepare_v2(db, statement, -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Couldn't get rows: %s\n", sqlite3_errmsg(db));
+    return -1;
+  }
+
+  for (int i = 0; i < param_length; i++){
+    sqlite3_bind_int(ppStmt,i+1, params[i]);
   }
 
   int i = 0;
@@ -50,7 +74,7 @@ int initialize_db(sqlite3 **db){
   } else {return 0;}
 }
 
-int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr, int arr_length, char* text){
+int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr, int arr_length, char* text, char* date){
   sqlite3_stmt *ppStmt = NULL;
   const char *pZtail = NULL;
   const char* sql = command;
@@ -66,6 +90,9 @@ int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr
     if (text != NULL){
       int text_len = text ? strlen(text) : 0;
       sqlite3_bind_text(ppStmt, i+1, text, text_len, SQLITE_STATIC);
+    }
+    if (date != NULL){
+      sqlite3_bind_text(ppStmt, i+1, date, -1, SQLITE_STATIC);
 
     }
 

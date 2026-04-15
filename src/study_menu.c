@@ -72,7 +72,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   arr[0] = (int)duration/60;
   getchar();
 
-  rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL);
+  rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
 
   if (rc) return -1;
 
@@ -81,7 +81,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
 
   if (fin_task){
     arr[0] = 1;
-    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL);
+    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
     if (rc) return -1;
   }
 
@@ -100,7 +100,7 @@ int post_study_session(sqlite3*db, int* study_start, int* study_stop, int* distr
     fprintf(stderr, "Failed to get post study info");
     return 1;
   }
-  int insert_result = sql_command_exec(db, "study_sessions", insert_study_session, arr, 10, notes);
+  int insert_result = sql_command_exec(db, "study_sessions", insert_study_session, arr, 10, notes, NULL);
   if (insert_result){
     fprintf(stderr, "Failed to insert into study sessions");
     return 1;
