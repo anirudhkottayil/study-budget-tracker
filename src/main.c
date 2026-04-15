@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "mapper_func.h"
 #include <string.h>
 #include <stdlib.h>
+#include "mapper_func.h"
+#include "daily_log_menu.h"
 #include "db.h"
 #include "log.h"
 #include "study_menu.h"
@@ -48,6 +49,7 @@ int main(){
         loop = 0;
       }
     } else if (user_input == 2){
+      menu_check = daily_log_menu(db, &in_study);
 
     } else if (user_input == 3){
 

@@ -37,3 +37,7 @@ const char* count_subjects = "SELECT COUNT(*) FROM subjects;";
 const char* count_tasks = "SELECT COUNT(*) FROM tasks WHERE completed = 0;";
 
 const char* get_subjects = "SELECT id, name FROM subjects;";
+
+const char *count_daily_logs = "SELECT COUNT(*) FROM daily_log;";
+
+const char* get_n_logs = "SELECT * FROM daily_log ORDER BY date DESC LIMIT ?;";

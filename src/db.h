@@ -14,6 +14,26 @@ typedef struct {
   char task[50];
 } Task;
 
+typedef struct {
+  char date[13];
+  int sleep_time;
+  int wake_time;
+  int sleep_dur_min;
+  int sleep_quality;
+  int mood;
+  int energy;
+  int eat_out_meals;
+  int home_cooked;
+  int steps;
+  int outside_min;
+  int screen_time_min;
+  int exercise;
+  int caffeine_drinks;
+  int stress;
+  int productive_feel;
+  char notes[50];
+} Daily_logs;
+
 typedef void (Rowmapper) (sqlite3_stmt* ppStmt, void* arr, int index);
 
 int initialize_db(sqlite3 **db);
