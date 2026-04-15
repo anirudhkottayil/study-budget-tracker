@@ -39,7 +39,7 @@ void print_logs(Daily_logs* log, int num_logs){
   }
 }
 
-int vew_logs(sqlite3* db, int input, int* in_study){
+int view_logs(sqlite3* db, int input, int* in_study){
 
   int arr[1];
   int db_rows = count_rows(db, count_daily_logs);
@@ -57,6 +57,7 @@ int vew_logs(sqlite3* db, int input, int* in_study){
   }
 
   print_logs(logs, arr[0]);
+  free(logs);
   return 0;
 }
 
@@ -70,6 +71,7 @@ int daily_log_menu(sqlite3* db, int* in_study){
     }
     printf("Enter 1 to view logs\n");
     printf("Enter 2 to update logs\n");
+    printf("Enter 3 to go back to main menu\n");
     scanf("%d", &user_input);
     getchar();
 
@@ -79,7 +81,13 @@ int daily_log_menu(sqlite3* db, int* in_study){
       getchar();
       printf("\n");
       rc = view_logs(db, if_input, in_study);
+      if (rc) {
+        return 1;
+      }
     } else if (user_input == 2){
+
+    } else if (user_input == 3){
+      break;
 
     } else {
       printf("Invalid input!! Try again\n");

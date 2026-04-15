@@ -45,11 +45,11 @@ int main(){
     if (user_input == 1) {
       menu_check = study_menu(db, &in_study, &study_start,
                               &study_stop, &distraction_count, &subjects, &num_subjects, &tasks, &num_tasks);
-      if (menu_check){
-        loop = 0;
-      }
+      if (menu_check) loop = 0;
+
     } else if (user_input == 2){
       menu_check = daily_log_menu(db, &in_study);
+      if (menu_check) loop = 0;
 
     } else if (user_input == 3){
 
