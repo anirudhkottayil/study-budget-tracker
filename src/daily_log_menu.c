@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "daily_log_menu.h"
 #include "db.h"
 #include "sql_commands.h"
 #include "mapper_func.h"
 
-void print_logs(Daily_logs* log, int num_logs){
+void print_logs(Daily_logs* log, int num_logs, int* in_study){
+  if (*in_study){
+    printf("In Study Session\n");
+  }
   for (int i = 0; i < num_logs; i++) {
     char sleep_buf[32], wake_buf[32];
     time_t t;
@@ -56,8 +60,67 @@ int view_logs(sqlite3* db, int input, int* in_study){
     return 1;
   }
 
-  print_logs(logs, arr[0]);
+  print_logs(logs, arr[0], in_study);
   free(logs);
+  return 0;
+}
+
+int update_log(sqlite3* db, char* date, int* in_study){
+  int arr[15]; int rc;
+  int user_input;
+  printf("Enter sleep time: ");
+  scanf("%d", &arr[0]);
+  printf("\n");
+  printf("Enter updated wake time: ");
+  scanf("%d", &arr[1]);
+  printf("\n");
+  printf("Enter sleep quality: ");
+  scanf("%d", &arr[2]);
+  printf("\n");
+  printf("Enter mood: ");
+  scanf("%d", &arr[4]);
+  printf("\n");
+  printf("Enter energy: ");
+  scanf("%d", &arr[5]);
+  printf("\n");
+  printf("Enter eat out meals: ");
+  scanf("%d", &arr[6]);
+  printf("\n");
+  printf("Enter home cooked meals: ");
+  scanf("%d", &arr[7]);
+  printf("\n");
+  printf("Enter steps: ");
+  scanf("%d", &arr[8]);
+  printf("\n");
+  printf("Enter outside mins: ");
+  scanf("%d", &arr[9]);
+  printf("\n");
+  printf("Enter screen time mins: ");
+  scanf("%d", &arr[10]);
+  printf("\n");
+  printf("Enter exercise: ");
+  scanf("%d", &arr[11]);
+  printf("\n");
+  printf("Enter caffeine drinks: ");
+  scanf("%d", &arr[12]);
+  printf("\n");
+  printf("Enter stress: ");
+  scanf("%d", &arr[13]);
+  printf("\n");
+  printf("Enter productive feel: ");
+  scanf("%d", &arr[14]);
+  printf("\n");
+  getchar();
+  char temp_notes[50];
+  fgets(temp_notes, 50, stdin);
+  temp_notes[49] = '\0';
+
+  rc = sql_command_exec(db, "daily_log", update_daily_log, arr, 15, temp_notes, date);
+  if (rc){
+    fprintf(stderr, "Error updating the log");
+    return 1;
+  }
+  
   return 0;
 }
 
@@ -76,8 +139,7 @@ int daily_log_menu(sqlite3* db, int* in_study){
     getchar();
 
     if (user_input == 1){
-      printf("How many previous days logs do you want to see: ");
-      scanf("%d", &if_input);
+      printf("How many previous days logs do you want to see : ");
       getchar();
       printf("\n");
       rc = view_logs(db, if_input, in_study);
@@ -85,7 +147,16 @@ int daily_log_menu(sqlite3* db, int* in_study){
         return 1;
       }
     } else if (user_input == 2){
-
+      char date[11];
+      printf("Enter date of the log you want to update (YYYY-MM-DD): ");
+      scanf("%10s", date);
+      getchar();
+      date[10] = '\0';
+      printf("\n");
+      rc = update_log(db, date, in_study);
+      if (rc) {
+        return 1;
+      }
     } else if (user_input == 3){
       break;
 

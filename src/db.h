@@ -44,6 +44,8 @@ int show_db();
 int free_db();
 int count_rows(sqlite3* db, const char* statement);
 int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, int* params, int param_length);
-int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr,int arr_length, char* text);
+int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr,int arr_length, char* text, char* date);
 int first_run(sqlite3 *db);
+int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date);
+
 #endif

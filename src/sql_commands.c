@@ -41,3 +41,13 @@ const char* get_subjects = "SELECT id, name FROM subjects;";
 const char *count_daily_logs = "SELECT COUNT(*) FROM daily_log;";
 
 const char* get_n_logs = "SELECT * FROM daily_log ORDER BY date DESC LIMIT ?;";
+
+const char* get_log = "SELECT * FROM daily_log WHERE date = ?;";
+
+const char *update_daily_log =
+    "UPDATE daily_log SET "
+    "sleep_time = ?, wake_time = ?, sleep_dur_min = ?, sleep_quality = ?, "
+    "mood = ?, energy = ?, eat_out_meals = ?, home_cooked = ?, steps = ?, "
+    "outside_min = ?, screen_time_min = ?, exercise = ?, caffeine_drinks = ?, "
+    "stress = ?, productive_feel = ?, notes = ? "
+    "WHERE date = ?;";
