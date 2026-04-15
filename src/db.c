@@ -5,11 +5,15 @@
 #include "schema.h"
 #include "sql_commands.h"
 
-int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper){
+int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, int* params, int param_length){
   sqlite3_stmt *ppStmt = NULL;
   if (sqlite3_prepare_v2(db, statement, -1, &ppStmt, NULL) != SQLITE_OK){
     fprintf(stderr, "Couldn't get rows: %s\n", sqlite3_errmsg(db));
     return -1;
+  }
+
+  for (int i = 0; i < param_length; i++){
+    sqlite3_bind_int(ppStmt,i+1, params[i]);
   }
 
   int i = 0;
