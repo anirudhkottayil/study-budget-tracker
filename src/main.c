@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "db.h"
 #include "log.h"
-#include "menu.h"
+#include "study_menu.h"
 #include "sql_commands.h"
 
 int main(){
