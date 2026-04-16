@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "mapper_func.h"
+#include "subject_menu.h"
 #include "daily_log_menu.h"
 #include "db.h"
 #include "log.h"
@@ -57,6 +58,7 @@ int main(){
       if (menu_check)  loop = 0;
 
     } else if (user_input == 4){
+      menu_check = subjects_menu(db, &in_study, &subjects, &num_subjects);
 
     } else if (user_input == 5){
 
