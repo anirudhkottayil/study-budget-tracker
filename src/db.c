@@ -83,7 +83,7 @@ int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr
     rc = sqlite3_prepare_v2(db,sql, -1,&ppStmt, &pZtail);
     if (rc != SQLITE_OK){ return rc; }
 
-    int i;
+    int i = 0;
     for (i = 0; i < arr_length; i++){
       sqlite3_bind_int(ppStmt, i+1, arr[i]);
     }
