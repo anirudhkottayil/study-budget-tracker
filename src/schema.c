@@ -51,7 +51,7 @@ const char *DB_SCHEMA =
     "    amount_cents     INTEGER,"
     "    need_score       INTEGER,"
     "    want_score       INTEGER,"
-    "    importance       REAL,"
+    "    importance       INTEGER,"
     "    recurrence       INTEGER,"
     "    planned          INTEGER,"
     "    payment_method   INTEGER,"
