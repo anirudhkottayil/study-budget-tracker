@@ -65,3 +65,5 @@ const char *update_expense =
     "importance = ?, recurrence = ?, planned = ?, payment_method = ?, "
     "time_of_purchase = ?, notes = ? "
     "WHERE date = ?;";
+
+const char *delete_subject = "DELETE FROM subjects WHERE name = ?;";
