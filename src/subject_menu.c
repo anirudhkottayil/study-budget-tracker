@@ -21,7 +21,7 @@ int delete_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* na
       (*subjects)[i] = (*subjects)[i + 1];
   }
 
-  sql_command_exec(db,"subjects", delete_subject, NULL, 0, name, NULL);
+  sql_command_exec(db,"subjects", delete_subject_sql, NULL, 0, name, NULL);
   Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects - 1));
   if (temp_ptr == NULL){
     fprintf(stderr, "Realloc subjects failed\n");

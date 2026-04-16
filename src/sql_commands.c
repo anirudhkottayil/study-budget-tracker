@@ -66,4 +66,4 @@ const char *update_expense =
     "time_of_purchase = ?, notes = ? "
     "WHERE date = ?;";
 
-const char *delete_subject = "DELETE FROM subjects WHERE name = ?;";
+const char *delete_subject_sql = "DELETE FROM subjects WHERE name = ?;";
