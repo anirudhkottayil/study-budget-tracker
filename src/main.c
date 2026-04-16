@@ -6,7 +6,7 @@
 #include "db.h"
 #include "log.h"
 #include "study_menu.h"
-#include "expenses_menu.h"
+#include "expense_menu.h"
 #include "sql_commands.h"
 
 int main(){
