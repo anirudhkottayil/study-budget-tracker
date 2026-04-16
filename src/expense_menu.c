@@ -1,10 +1,78 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "expense_menu.h"
 #include "mapper_func.h"
 #include "db.h"
 #include "sql_commands.h"
+
+int update_accounts(sqlite3* db, char* date, int* in_study ) {
+  if (*in_study){
+    printf("In study session\n");
+  }
+  int arr[9];
+  char notes[500];
+  const char *categories[] = {
+      "Food", "Transport", "Groceries", "Utilities",
+      "Health", "Education", "Entertainment", "Clothing", "Other"
+  };
+  const char *recurrence_str[] = { "One-off", "Weekly", "Monthly" };
+  const char *payment_str[]    = { "Cash", "Card", "Tap" };
+
+  printf("| %-3s | %-15s |\n", "ID", "CATEGORY");
+  printf("|-----|------------------|\n");
+  for (int i = 0; i < 9; i++)
+      printf("| %-3d | %-15s |\n", i, categories[i]);
+  printf("Enter category: ");
+  scanf("%d", &arr[0]);
+
+  printf("Enter amount in cents (e.g. 1500 = $15.00): ");
+  scanf("%d", &arr[1]);
+
+  printf("Enter need score (1-5): ");
+  scanf("%d", &arr[2]);
+
+  printf("Enter want score (1-5): ");
+  scanf("%d", &arr[3]);
+
+  // importance computed from need and want, scaled to int (*100)
+  // store as int here, cast to double on insert
+  printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
+  scanf("%d", &arr[4]);
+
+  printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
+  printf("|-----|------------|\n");
+  for (int i = 0; i < 3; i++)
+      printf("| %-3d | %-10s |\n", i, recurrence_str[i]);
+  printf("Enter recurrence: ");
+  scanf("%d", &arr[5]);
+
+  printf("Planned? (1 = yes, 0 = no): ");
+  scanf("%d", &arr[6]);
+
+  printf("| %-3s | %-10s |\n", "ID", "PAYMENT");
+  printf("|-----|------------|\n");
+  for (int i = 0; i < 3; i++)
+      printf("| %-3d | %-10s |\n", i, payment_str[i]);
+  printf("Enter payment method: ");
+  scanf("%d", &arr[7]);
+
+  arr[8] = (int)time(NULL);  // time_of_purchase
+
+  getchar();
+  printf("Enter notes: ");
+  fgets(notes, 500, stdin);
+  notes[strcspn(notes, "\n")] = '\0';
+
+  int rc = sql_command_exec(db, "expenses", update_expense, arr, 9, notes, date);
+  if (rc){
+    fprintf(stderr, "Error updating the account\n");
+    return 1;
+  }
+
+  return 0;
+}
 
 void print_expenses(Expense *expenses, int count, int* in_study) {
   if (*in_study){
@@ -29,7 +97,7 @@ void print_expenses(Expense *expenses, int count, int* in_study) {
         printf("│  Amount:         $%.2f\n", expenses[i].amount_cents / 100.0);
         printf("│  Need Score:     %d/5\n",  expenses[i].need_score);
         printf("│  Want Score:     %d/5\n",  expenses[i].want_score);
-        printf("│  Importance:     %.2f\n",  expenses[i].importance);
+        printf("│  Importance:     %.2f\n",  (float) expenses[i].importance / 100);
         printf("│  Recurrence:     %s\n",    (i >= 0 && i <= 2) ? recurrence_str[expenses[i].recurrence] : "Unkown");
         printf("│  Planned:        %s\n",    expenses[i].planned ? "Yes" : "No");
         printf("│  Payment Method: %s\n",    (i >= 0 && i <= 2) ? payment_str[expenses[i].payment_method] : "Unkown");

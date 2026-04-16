@@ -41,7 +41,7 @@ typedef struct {
     int amount_cents;
     int need_score;
     int want_score;
-    float importance;
+    int importance;
     int recurrence;
     int planned;
     int payment_method;

@@ -19,4 +19,5 @@ extern const char* get_log;
 extern const char* update_daily_log;
 extern const char* count_expenses;
 extern const char *get_expenses;
+extern const char *update_expense;
 #endif

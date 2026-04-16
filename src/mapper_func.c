@@ -49,7 +49,7 @@ void map_expense(sqlite3_stmt *ppStmt, void *arr, int index) {
     expenses[index].amount_cents     = sqlite3_column_int  (ppStmt, 3);
     expenses[index].need_score       = sqlite3_column_int  (ppStmt, 4);
     expenses[index].want_score       = sqlite3_column_int  (ppStmt, 5);
-    expenses[index].importance       = sqlite3_column_int(ppStmt, 6) / 100;
+    expenses[index].importance       = sqlite3_column_int(ppStmt, 6);
     expenses[index].recurrence       = sqlite3_column_int  (ppStmt, 7);
     expenses[index].planned          = sqlite3_column_int  (ppStmt, 8);
     expenses[index].payment_method   = sqlite3_column_int  (ppStmt, 9);

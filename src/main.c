@@ -54,6 +54,7 @@ int main(){
 
     } else if (user_input == 3){
       menu_check = expenses_menu(db, &in_study);
+      if (menu_check)  loop = 0;
 
     } else if (user_input == 4){
 

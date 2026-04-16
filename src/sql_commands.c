@@ -58,3 +58,10 @@ const char *get_expenses =
     "SELECT id, date, category, amount_cents, need_score, want_score, "
     "importance, recurrence, planned, payment_method, time_of_purchase, notes "
     "FROM expenses ORDER BY date DESC LIMIT ?;";
+
+const char *update_expense =
+    "UPDATE expenses SET "
+    "category = ?, amount_cents = ?, need_score = ?, want_score = ?, "
+    "importance = ?, recurrence = ?, planned = ?, payment_method = ?, "
+    "time_of_purchase = ?, notes = ? "
+    "WHERE date = ?;";
