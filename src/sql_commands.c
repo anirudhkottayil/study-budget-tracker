@@ -51,3 +51,10 @@ const char *update_daily_log =
     "outside_min = ?, screen_time_min = ?, exercise = ?, caffeine_drinks = ?, "
     "stress = ?, productive_feel = ?, notes = ? "
     "WHERE date = ?;";
+
+const char *count_expenses = "SELECT COUNT(*) FROM expenses;";
+
+const char *get_expenses =
+    "SELECT id, date, category, amount_cents, need_score, want_score, "
+    "importance, recurrence, planned, payment_method, time_of_purchase, notes "
+    "FROM expenses ORDER BY date DESC LIMIT ?;";

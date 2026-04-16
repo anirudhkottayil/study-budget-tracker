@@ -6,6 +6,7 @@
 #include "db.h"
 #include "log.h"
 #include "study_menu.h"
+#include "expenses_menu.h"
 #include "sql_commands.h"
 
 int main(){
@@ -52,6 +53,7 @@ int main(){
       if (menu_check) loop = 0;
 
     } else if (user_input == 3){
+      menu_check = expenses_menu(db, &in_study);
 
     } else if (user_input == 4){
 

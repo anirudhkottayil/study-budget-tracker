@@ -39,3 +39,21 @@ void map_logs(sqlite3_stmt* ppStmt, void* arr, int index){
   strncpy(logs[index].notes, (const char*) sqlite3_column_text (ppStmt, 15), 49);
   logs[index].notes[49] = '\n';
 }
+
+void map_expense(sqlite3_stmt *ppStmt, void *arr, int index) {
+    Expense *expenses = (Expense *)arr;
+    expenses[index].id               = sqlite3_column_int  (ppStmt, 0);
+    strncpy(expenses[index].date,      (const char *)sqlite3_column_text(ppStmt, 1), 10);
+    expenses[index].date[10]         = '\0';
+    expenses[index].category         = sqlite3_column_int  (ppStmt, 2);
+    expenses[index].amount_cents     = sqlite3_column_int  (ppStmt, 3);
+    expenses[index].need_score       = sqlite3_column_int  (ppStmt, 4);
+    expenses[index].want_score       = sqlite3_column_int  (ppStmt, 5);
+    expenses[index].importance       = sqlite3_column_double(ppStmt, 6);
+    expenses[index].recurrence       = sqlite3_column_int  (ppStmt, 7);
+    expenses[index].planned          = sqlite3_column_int  (ppStmt, 8);
+    expenses[index].payment_method   = sqlite3_column_int  (ppStmt, 9);
+    expenses[index].time_of_purchase = sqlite3_column_int  (ppStmt, 10);
+    strncpy(expenses[index].notes,     (const char *)sqlite3_column_text(ppStmt, 11), 49);
+    expenses[index].notes[49]        = '\0';
+}

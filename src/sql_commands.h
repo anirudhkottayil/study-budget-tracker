@@ -17,4 +17,6 @@ extern const char *count_daily_logs;
 extern const char* get_n_logs;
 extern const char* get_log;
 extern const char* update_daily_log;
+extern const char* count_expenses;
+extern const char *get_expenses;
 #endif

@@ -34,6 +34,21 @@ typedef struct {
   char notes[50];
 } Daily_logs;
 
+typedef struct {
+    int id;
+    char date[11];
+    int category;
+    int amount_cents;
+    int need_score;
+    int want_score;
+    float importance;
+    int recurrence;
+    int planned;
+    int payment_method;
+    int time_of_purchase;
+    char notes[50];
+} Expense;
+
 typedef void (Rowmapper) (sqlite3_stmt* ppStmt, void* arr, int index);
 
 int initialize_db(sqlite3 **db);
