@@ -21,8 +21,7 @@ const char *insert_study_session =
     "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 const char *insert_task =
-    "INSERT INTO tasks (name, estimated_min) VALUES (?, ?);";
-
+    "INSERT INTO tasks (estimated_min, name) VALUES (?, ?);";
 const char *update_task_time =
     "UPDATE tasks SET observed_min = observed_min + ? WHERE id = ?;";
 

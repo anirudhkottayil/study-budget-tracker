@@ -1,5 +1,44 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "tasks_menu.h"
+#include "sql_commands.h"
+
+int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
+  int add_idx = -1;
+  for (int i = 0; i < *num_tasks; i++){
+    if (strcmp((*tasks)[i].task, name) == 0){
+        add_idx = i;
+        break;
+    }
+  }
+
+  if (add_idx != -1) return -1;
+
+  int est[1], rc;
+  printf("Enter estimated minutes for the task: ");
+  scanf("%d", &est[0]);
+  getchar();
+  printf("\n");
+
+  rc = sql_command_exec(db, "tasks", insert_task, est, 1, name, NULL);
+  if (rc){
+    fprintf(stderr, "Insert task failed\n");
+    return 1;
+  }
+
+  Task* temp_ptr = realloc(*tasks, sizeof(Task) * (*num_tasks + 1));
+  if (temp_ptr == NULL){
+    fprintf(stderr, "Realloc task failed\n");
+    return 1;
+  }
+  *tasks = temp_ptr;
+  *num_tasks = *num_tasks + 1;
+  (*tasks)[*num_tasks - 1].id = (int)sqlite3_last_insert_rowid(db);
+  strncpy((*tasks)[*num_tasks - 1].task, name, 49);
+
+  return 0;
+}
 
 void view_tasks(Task** tasks, int* num_tasks, int* in_study){
   if (*in_study){
@@ -35,17 +74,17 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
         return 1;
       }
     } else if (user_input == 2){
-      char subject[50];
-      printf("Enter the name of the subject you want to add: ");
-      scanf("%49s", subject);
+      char task[50];
+      printf("Enter the name of the task you want to add: ");
+      scanf("%49s", task);
       getchar();
       subject[49] = '\0';
       printf("\n");
-      rc = add_subject(db, subjects, num_subjects, subject);
+      rc = add_task(db, tasks, num_subjects, task);
       if (rc == 1) {
         return 1;
       } else if (rc == -1) {
-        printf("Subject already in db\n");
+        printf("Task already in db\n");
       } else {
         printf("Success\n");
       }

@@ -97,7 +97,6 @@ int post_study_session(sqlite3*db, int* study_start, int* study_stop, int* distr
   char notes[500];
   int rc = get_study_info(arr, subjects, sub_num, notes);
   if (rc){
-    fprintf(stderr, "Failed to get post study info");
     return 1;
   }
   int insert_result = sql_command_exec(db, "study_sessions", insert_study_session, arr, 10, notes, NULL);
