@@ -1,9 +1,40 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "income_menu.h"
 #include "db.h"
 #include "sql_commands.h"
 #include "mapper_func.h"
+
+int get_income_input(int arr[], char *notes) {
+  const char *sources[] = { "Salary", "Freelance", "Transfer", "Other" };
+
+  printf("Enter amount in cents (e.g. 150000 = $1500.00): ");
+  scanf("%d", &arr[0]);
+
+  printf("| %-3s | %-10s |\n", "ID", "SOURCE");
+  printf("|-----|------------|\n");
+  for (int i = 0; i < 4; i++)
+      printf("| %-3d | %-10s |\n", i, sources[i]);
+  printf("Enter source: ");
+  scanf("%d", &arr[1]);
+
+  getchar();
+  printf("Enter notes: ");
+  fgets(notes, 500, stdin);
+  notes[strcspn(notes, "\n")] = '\0';
+
+  return 0;
+}
+
+int insert_event(sqlite3* db, int* in_study){
+  int rc = 1; int arr[2]; char notes[50];
+
+  get_income_input(arr, notes);
+
+  rc = sql_command_exec(db, "income_events", insert_income, arr, 2, notes, NULL);
+  return 0;
+}
 
 void print_events(IncomeEvent* events, int count, int* in_study){
   if (*in_study){
@@ -70,13 +101,7 @@ int income_menu(sqlite3* db, int* in_study){
         return 1;
       }
     } else if (user_input == 2){
-      // char date[11];
-      // printf("Enter date of the log you want to update (YYYY-MM-DD): ");
-      // scanf("%10s", date);
-      // getchar();
-      // date[10] = '\0';
-      // printf("\n");
-      // rc = update_log(db, date, in_study);
+      rc = insert_event(db, in_study);
       if (rc) {
         return 1;
       }

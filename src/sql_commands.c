@@ -72,3 +72,7 @@ const char *count_income_events = "SELECT COUNT(*) FROM income_events;";
 
 const char *get_income_events =
     "SELECT id, date, amount_cents, source, notes FROM income_events ORDER BY date DESC LIMIT ?;";
+
+const char *insert_income =
+    "INSERT INTO income_events (date, amount_cents, source, notes) "
+    "VALUES (date('now', 'localtime'), ?, ?, ?);";
