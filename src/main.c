@@ -8,6 +8,7 @@
 #include "income_menu.h"
 #include "log.h"
 #include "study_menu.h"
+#include "tasks_menu.h"
 #include "expense_menu.h"
 #include "sql_commands.h"
 
@@ -66,6 +67,9 @@ int main(){
       menu_check = income_menu(db, &in_study);
       if (menu_check)  loop = 0;
 
+    } else if (user_input == 5){
+      menu_check = tasks_menu(db, &in_study, &tasks, &num_tasks);
+      if (menu_check)  loop = 0;
 
     } else if (user_input == 6){
       printf("Bye Bye\n");

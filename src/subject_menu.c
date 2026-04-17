@@ -109,7 +109,7 @@ int subjects_menu(sqlite3*db, int* in_study, Subjects** subjects, int* num_subje
       }
     } else if (user_input == 3){
       char subject[50];
-      printf("Enter the name of the subject you want to add: ");
+      printf("Enter the name of the subject you want to delete: ");
       scanf("%49s", subject);
       getchar();
       subject[49] = '\0';
