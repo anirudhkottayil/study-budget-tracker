@@ -76,3 +76,7 @@ const char *get_income_events =
 const char *insert_income =
     "INSERT INTO income_events (date, amount_cents, source, notes) "
     "VALUES (date('now', 'localtime'), ?, ?, ?);";
+
+const char *update_income =
+    "UPDATE income_events SET amount_cents = ?, source = ?, notes = ? "
+    "WHERE date = ?;";
