@@ -7,7 +7,7 @@
 #include "db.h"
 #include "sql_commands.h"
 
-int update_accounts(sqlite3* db, char* date, int* in_study ) {
+int update_account(sqlite3* db, char* date, int* in_study ) {
   if (*in_study){
     printf("In study session\n");
   }

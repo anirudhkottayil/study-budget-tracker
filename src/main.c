@@ -5,6 +5,7 @@
 #include "subject_menu.h"
 #include "daily_log_menu.h"
 #include "db.h"
+#include "income_menu.h"
 #include "log.h"
 #include "study_menu.h"
 #include "expense_menu.h"
@@ -62,6 +63,9 @@ int main(){
       if (menu_check)  loop = 0;
 
     } else if (user_input == 5){
+      menu_check = income_menu(db, &in_study);
+      if (menu_check)  loop = 0;
+
 
     } else if (user_input == 6){
       printf("Bye Bye\n");
