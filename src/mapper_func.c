@@ -57,3 +57,19 @@ void map_expense(sqlite3_stmt *ppStmt, void *arr, int index) {
     strncpy(expenses[index].notes,     (const char *)sqlite3_column_text(ppStmt, 11), 49);
     expenses[index].notes[49]        = '\0';
 }
+
+void map_income_event(sqlite3_stmt *ppStmt, void *arr, int index) {
+    IncomeEvent *events = (IncomeEvent *)arr;
+    events[index].id           = sqlite3_column_int(ppStmt, 0);
+    strncpy(events[index].date, (const char *)sqlite3_column_text(ppStmt, 1), 10);
+    events[index].date[10]     = '\0';
+    events[index].amount_cents = sqlite3_column_int(ppStmt, 2);
+    events[index].source       = sqlite3_column_int(ppStmt, 3);
+    const char *notes = (const char *)sqlite3_column_text(ppStmt, 4);
+    if (notes) {
+        strncpy(events[index].notes, notes, 49);
+        events[index].notes[49] = '\0';
+    } else {
+        events[index].notes[0] = '\0';
+    }
+}

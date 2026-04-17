@@ -21,4 +21,7 @@ extern const char* count_expenses;
 extern const char *get_expenses;
 extern const char *update_expense;
 extern const char *delete_subject_sql;
+extern const char *count_income_events;
+extern const char *get_income_events;
+
 #endif

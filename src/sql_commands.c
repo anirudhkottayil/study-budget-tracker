@@ -67,3 +67,8 @@ const char *update_expense =
     "WHERE date = ?;";
 
 const char *delete_subject_sql = "DELETE FROM subjects WHERE name = ?;";
+
+const char *count_income_events = "SELECT COUNT(*) FROM income_events;";
+
+const char *get_income_events =
+    "SELECT id, date, amount_cents, source, notes FROM income_events ORDER BY date DESC LIMIT ?;";

@@ -140,6 +140,7 @@ int daily_log_menu(sqlite3* db, int* in_study){
 
     if (user_input == 1){
       printf("How many previous days logs do you want to see : ");
+      scanf("%d", &if_input);
       getchar();
       printf("\n");
       rc = view_logs(db, if_input, in_study);
