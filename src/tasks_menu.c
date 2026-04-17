@@ -4,6 +4,39 @@
 #include "tasks_menu.h"
 #include "sql_commands.h"
 
+void view_tasks(Task** tasks, int* num_tasks, int* in_study){
+  if (*in_study){
+    printf("IN STUDY SESH\n");
+  }
+
+  printf("| %-3s | %-20s |\n", "ID", "TASK");
+  printf("|-----|----------------------|\n");
+  for (int i = 0; i < *num_tasks; i++){
+      printf("| %-3d | %-20s |\n", (*tasks)[i].id, (*tasks)[i].task);
+
+}
+
+int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks, int* task_id){
+  int rc; int fin_task; int* arr[1];
+  if (task_id != NULL){
+    rc = sql_command_exec(db, "tasks", complete_task, task_id, 1, NULL, NULL);
+
+    if (rc) return -1;
+  }
+  view_tasks(tasks, num_tasks, in_study);
+  printf("Which task did you work on\n");
+  scanf("%d", &arr[0]);
+  printf("Did you finish the task ? (1 if yes)\n");
+  scanf("%d",&fin_task);
+  getchar();
+  if (*fin_task){
+    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
+   if (rc) return -1;
+  }
+
+  return 0;
+}
+
 int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
   int arr[3]; int rc; int fin_task;
   printf("Which task did you work on\n");
@@ -24,14 +57,13 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
     fprintf(stderr, "Update task time failed\n");
     return -1;
   } 
-
   printf("Did you finish the task ? (1 if yes)\n");
   scanf("%d",&fin_task);
+  getchar();
 
   if (fin_task){
     arr[0] = 1;
-    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
-    if (rc) return -1;
+    rc = complete_a_task(db, NULL, NULL, &arr);
   }
 
   return 0;
@@ -73,17 +105,6 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
   return 0;
 }
 
-void view_tasks(Task** tasks, int* num_tasks, int* in_study){
-  if (*in_study){
-    printf("IN STUDY SESH\n");
-  }
-
-  printf("| %-3s | %-20s |\n", "ID", "TASK");
-  printf("|-----|----------------------|\n");
-  for (int i = 0; i < *num_tasks; i++){
-      printf("| %-3d | %-20s |\n", (*tasks)[i].id, (*tasks)[i].task);
-
-}
 
 int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
 
@@ -127,12 +148,21 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
       if (rc == 1) {
         return 1;
       } else if (rc == -1) {
-        printf("Subject not found\n");
+        printf("Task not found\n");
       } else {
         printf("Success\n");
       }
 
     } else if (user_input == 4){
+        rc = complete_a_task(db, tasks, num_tasks, in_study);
+      if (rc == 1) {
+        printf("Task completion failed\n");
+        return 1;
+      } else {
+        printf("Success\n");
+      }
+
+    } else if (user_input == 5){
       break;
 
     } else {
