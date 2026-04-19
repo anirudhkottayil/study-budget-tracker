@@ -54,6 +54,7 @@ int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name)
   *num_subjects = *num_subjects + 1;
   (*subjects)[*num_subjects - 1].id = (int)sqlite3_last_insert_rowid(db);
   strncpy((*subjects)[*num_subjects - 1].subject, name, 49);
+  (*subjects)[*num_subjects - 1].subject[49] = '\0';
   
   return 0;
 }

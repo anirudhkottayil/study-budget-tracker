@@ -99,7 +99,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
   strncpy((*tasks)[*num_tasks - 1].task, name, 49);
   (*tasks)[*num_tasks - 1].estimated_mins = est[0];
   (*tasks)[*num_tasks - 1].observed_mins  = 0;
-
+  (*tasks)[*num_tasks - 1].task[49] = '\0';
   return 0;
 }
 
