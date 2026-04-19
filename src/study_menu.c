@@ -16,7 +16,8 @@ int main_menu(int* in_study){
   printf("Enter 3 for Expenses menu\n");
   printf("Enter 4 for Subjects menu\n");
   printf("Enter 5 for income menu\n");
-  printf("Enter 6 to exit\n");
+  printf("Enter 6 for Tasks menu\n");
+  printf("Enter 7 to exit\n");
   scanf("%d", &user_input);
   getchar();
 
@@ -80,8 +81,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   scanf("%d",&fin_task);
 
   if (fin_task){
-    arr[0] = 1;
-    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
+    rc = sql_command_exec(db, "tasks", complete_task, &arr[1], 1, NULL, NULL);
     if (rc) return -1;
   }
 
@@ -150,8 +150,6 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
     } else {
       printf("Invalid input try again");
     }
-
-
   }
-
+  return 0;
 }
