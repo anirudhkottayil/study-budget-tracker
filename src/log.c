@@ -16,6 +16,7 @@ int check_first_time_run(){
     return 0;
   } else{
     file = fopen(".appran", "w");
+    fclose(file);
     return 1;
   }
 }
