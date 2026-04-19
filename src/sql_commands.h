@@ -14,10 +14,10 @@ extern const char *count_subjects;
 extern const char *count_tasks;
 extern const char *get_subjects;
 extern const char *count_daily_logs;
-extern const char* get_n_logs;
-extern const char* get_log;
-extern const char* update_daily_log;
-extern const char* count_expenses;
+extern const char *get_n_logs;
+extern const char *get_log;
+extern const char *update_daily_log;
+extern const char *count_expenses;
 extern const char *get_expenses;
 extern const char *update_expense;
 extern const char *delete_subject_sql;
@@ -25,4 +25,5 @@ extern const char *count_income_events;
 extern const char *get_income_events;
 extern const char *insert_income;
 extern const char *update_income;
+
 #endif

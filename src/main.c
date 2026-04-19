@@ -67,11 +67,11 @@ int main(){
       menu_check = income_menu(db, &in_study);
       if (menu_check)  loop = 0;
 
-    } else if (user_input == 5){
+    } else if (user_input == 6){
       menu_check = tasks_menu(db, &in_study, &tasks, &num_tasks);
       if (menu_check)  loop = 0;
 
-    } else if (user_input == 6){
+    } else if (user_input == 7){
       printf("Bye Bye\n");
       loop = 0;
     } else {
