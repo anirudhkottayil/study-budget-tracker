@@ -74,8 +74,11 @@ int update_log(sqlite3* db, char* date, int* in_study){
   printf("Enter updated wake time: ");
   scanf("%d", &arr[1]);
   printf("\n");
-  printf("Enter sleep quality: ");
+  printf("Enter sleep duration: ");
   scanf("%d", &arr[2]);
+  printf("\n");
+  printf("Enter sleep quality: ");
+  scanf("%d", &arr[3]);
   printf("\n");
   printf("Enter mood: ");
   scanf("%d", &arr[4]);
@@ -113,7 +116,7 @@ int update_log(sqlite3* db, char* date, int* in_study){
   getchar();
   char temp_notes[50];
   fgets(temp_notes, 50, stdin);
-  temp_notes[49] = '\0';
+  temp_notes[strcspn(temp_notes, "\n")] = '\0'; 
 
   rc = sql_command_exec(db, "daily_log", update_daily_log, arr, 15, temp_notes, date);
   if (rc){
