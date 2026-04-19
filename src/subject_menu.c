@@ -67,7 +67,7 @@ int view_subjects(Subjects** subjects, int* num_subjects, int* in_study){
   printf("|-----|----------------------|\n");
   for (int i = 0; i < *num_subjects; i++){
       printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
-
+  }
   return 0;
 }
 
