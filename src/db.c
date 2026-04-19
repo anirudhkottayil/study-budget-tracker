@@ -5,6 +5,23 @@
 #include "schema.h"
 #include "sql_commands.h"
 
+int get_prev_date(sqlite3* db, char* prev_date){
+  sqlite3_stmt *ppStmt = NULL;
+  if (sqlite3_prepare_v2(db, get_last_log_date, -1, &ppStmt, NULL) != SQLITE_OK ) {
+    fprintf(stderr, "Error preparing stmt for prev date");
+    return 1;
+  }
+
+  if (sqlite3_step(ppStmt) == SQLITE_ROW){
+    strncpy(prev_date, (const char*)sqlite3_column_text(ppStmt, 0), 10);
+    prev_date[10] = '\0';
+  }
+
+  sqlite3_finalize(ppStmt);
+
+  return 0;
+}
+
 
 int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date){
 

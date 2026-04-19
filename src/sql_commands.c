@@ -79,3 +79,5 @@ const char *insert_income =
 const char *update_income =
     "UPDATE income_events SET amount_cents = ?, source = ?, notes = ? "
     "WHERE date = ?;";
+
+const char *get_last_log_date = "SELECT date FROM daily_log ORDER BY date DESC LIMIT 1;";

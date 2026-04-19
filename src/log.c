@@ -9,6 +9,22 @@
 //   // Get date of previous day daily log
 // }
 
+int check_new_day(sqlite3* db){
+  char prev_date[11] = {0}; char date_today[11];
+  int rc = get_prev_date(db, prev_date);
+  if (rc){
+    fprintf(stderr, "Error gettin previous day date\n");
+    return -1;
+  }
+  time_t t = time(NULL);
+  strftime(date_today, sizeof(date_today), "%Y-%m-%d", localtime(&t));
+  if (strcmp(date_today, prev_date) == 0){
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 int check_first_time_run(){
   FILE *file = fopen(".appran", "r");
   if (file){
