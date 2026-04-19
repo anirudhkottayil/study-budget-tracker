@@ -36,15 +36,15 @@ int update_event(sqlite3* db, char* date, int* in_study){
   get_income_input(arr, notes);
   
   rc = sql_command_exec(db, "income_events", update_income, arr, 2, notes, date);
+  if (rc){
+    fprintf(stderr, "income update failed\n");
+    return -1;
+  }
   if (sqlite3_changes(db) == 0) {
     printf("No income record found for date: %s\n", date);
     return 1;
   }
 
-  if (rc){
-    fprintf(stderr, "income update failed\n");
-    return -1;
-  }
 
   return 0;
 }
@@ -131,7 +131,7 @@ int income_menu(sqlite3* db, int* in_study){
     } else if (user_input == 3){
       char date[11];
       printf("Enter the date of the income event you want to update: ");
-      scanf("10%s", date);
+      scanf("%10s", date);
       getchar();
       date[10] = '\0';
       printf("\n");
