@@ -154,7 +154,7 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  for (int i = 0; i < 5; i++){
+  for (int i = 0; i < 6; i++){
     sqlite3_bind_int(ppStmt, i + 1, arr[i]);
   }
 
@@ -171,8 +171,8 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  sqlite3_bind_int(ppStmt, 1, arr[5]);
-  sqlite3_bind_int(ppStmt, 2, arr[5]);
+  sqlite3_bind_int(ppStmt, 1, arr[6]);
+  sqlite3_bind_int(ppStmt, 2, arr[6]);
 
   if (sqlite3_step(ppStmt) != SQLITE_DONE) {
     fprintf(stderr, "Failed to insert first bank balance: %s\n", sqlite3_errmsg(db));
@@ -187,7 +187,7 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  for ( int i = 0 ; i < arr[6]; i++){
+  for ( int i = 0 ; i < arr[7]; i++){
     sqlite3_bind_text(ppStmt, 1, sub_arr[i], -1, SQLITE_STATIC);
 
      if (sqlite3_step(ppStmt) != SQLITE_DONE) {

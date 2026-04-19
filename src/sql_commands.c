@@ -6,8 +6,9 @@ const char* insert_daily_log = "INSERT INTO daily_log ("
         ") VALUES ("
         "    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-const char* first_log = "INSERT INTO daily_log (date, sleep_time, wake_time, sleep_quality, mood, energy) "
-        "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?);";
+const char* first_log = 
+    "INSERT INTO daily_log (date, sleep_time, wake_time, sleep_dur_min, sleep_quality, mood, energy) "
+    "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?, ?);";
 
 const char* first_bank_balance = "INSERT INTO bank_snapshots (date, balance_cents, computed_cents, discrepancy_cents) "
         "VALUES (date('now', 'localtime'), ?, ?, 0);";
