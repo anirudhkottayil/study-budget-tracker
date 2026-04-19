@@ -19,8 +19,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
   int rc; int fin_task; int arr[1];
   if (task_id != NULL){
     rc = sql_command_exec(db, "tasks", complete_task, task_id, 1, NULL, NULL);
-
-    if (rc) return -1;
+    return rc ? -1 : 0; 
   }
   view_tasks(tasks, num_tasks, in_study);
   printf("Which task did you work on\n");
@@ -47,7 +46,6 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
   scanf("%d",&arr[1]);
   printf("Enter time you spent on the task right now (in mins): ");
   scanf("%d", &arr[0]);
-  arr[0] = (int) arr[0];
   getchar();
 
   rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
@@ -99,7 +97,9 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
   *num_tasks = *num_tasks + 1;
   (*tasks)[*num_tasks - 1].id = (int)sqlite3_last_insert_rowid(db);
   strncpy((*tasks)[*num_tasks - 1].task, name, 49);
-
+  (*tasks)[*num_tasks - 1].estimated_mins = est[0];
+  (*tasks)[*num_tasks - 1].observed_mins  = 0;
+  (*tasks)[*num_tasks - 1].task[49] = '\0';
   return 0;
 }
 
@@ -123,9 +123,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
 
     if (user_input == 1){
       view_tasks(tasks, num_tasks, in_study);
-      if (rc) {
-        return 1;
-      }
+
     } else if (user_input == 2){
       char task[50];
       printf("Enter the name of the task you want to add: ");

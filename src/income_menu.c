@@ -21,7 +21,7 @@ int get_income_input(int arr[], char *notes) {
 
   getchar();
   printf("Enter notes: ");
-  fgets(notes, 500, stdin);
+  fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
 
   return 0;
@@ -56,6 +56,7 @@ int insert_event(sqlite3* db, int* in_study){
   get_income_input(arr, notes);
 
   rc = sql_command_exec(db, "income_events", insert_income, arr, 2, notes, NULL);
+  if (rc) return 1;  
   return 0;
 }
 
