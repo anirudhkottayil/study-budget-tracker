@@ -53,6 +53,7 @@ int view_logs(sqlite3* db, int input, int* in_study){
   }
   arr[0]= (input > db_rows) ? db_rows : input;
 
+  if (arr[0] == 0) return 0;
   Daily_logs* logs = malloc(arr[0] * sizeof(Daily_logs));
   int rc = get_rows(db, get_n_logs, logs, map_logs, arr, 1) ;
   if (rc == -1){
@@ -67,7 +68,6 @@ int view_logs(sqlite3* db, int input, int* in_study){
 
 int update_log(sqlite3* db, char* date, int* in_study){
   int arr[15]; int rc;
-  int user_input;
   printf("Enter sleep time: ");
   scanf("%d", &arr[0]);
   printf("\n");
