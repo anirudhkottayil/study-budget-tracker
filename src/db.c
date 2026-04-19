@@ -90,6 +90,7 @@ int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr
     if (text != NULL){
       int text_len = text ? strlen(text) : 0;
       sqlite3_bind_text(ppStmt, i+1, text, text_len, SQLITE_STATIC);
+      i++;
     }
     if (date != NULL){
       sqlite3_bind_text(ppStmt, i+1, date, -1, SQLITE_STATIC);
