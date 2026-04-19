@@ -33,11 +33,11 @@ void map_logs(sqlite3_stmt* ppStmt, void* arr, int index){
   logs[index].outside_min = sqlite3_column_int (ppStmt, 10);
   logs[index].screen_time_min = sqlite3_column_int (ppStmt, 11);
   logs[index].exercise = sqlite3_column_int (ppStmt, 12);
-  logs[index].caffeine_drinks = sqlite3_column_int (ppStmt, 12);
-  logs[index].stress = sqlite3_column_int (ppStmt, 13);
-  logs[index].productive_feel = sqlite3_column_int (ppStmt, 14);
-  strncpy(logs[index].notes, (const char*) sqlite3_column_text (ppStmt, 15), 49);
-  logs[index].notes[49] = '\n';
+  logs[index].caffeine_drinks = sqlite3_column_int (ppStmt, 13);
+  logs[index].stress = sqlite3_column_int (ppStmt, 14);
+  logs[index].productive_feel = sqlite3_column_int (ppStmt, 15);
+  strncpy(logs[index].notes, (const char*) sqlite3_column_text (ppStmt, 16), 49);
+  logs[index].notes[49] = '\0';
 }
 
 void map_expense(sqlite3_stmt *ppStmt, void *arr, int index) {
