@@ -43,7 +43,7 @@ int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, in
   }
   sqlite3_finalize(ppStmt);
 
-  return 0;
+  return i;
 }
 
 int count_rows(sqlite3* db, const char* statement){
