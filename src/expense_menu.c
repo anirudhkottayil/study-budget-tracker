@@ -90,17 +90,21 @@ void print_expenses(Expense *expenses, int count, int* in_study) {
         time_t t = expenses[i].time_of_purchase;
         strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", localtime(&t));
 
+        int cat = expenses[i].category;
+        int rec = expenses[i].recurrence;
+        int pay = expenses[i].payment_method;
+
         printf("┌─────────────────────────────────────┐\n");
         printf("│  ID:             %d\n",    expenses[i].id);
         printf("│  Date:           %s\n",    expenses[i].date);
-        printf("│  Category:       %s\n",    categories[(expenses[i].category >= 0 && expenses[i].category <= 8) ? expenses[i].category : 8]);
+        printf("│  Category:       %s\n",    (cat >= 0 && cat <= 8) ? categories[cat] : "Unknown");
         printf("│  Amount:         $%.2f\n", expenses[i].amount_cents / 100.0);
         printf("│  Need Score:     %d/5\n",  expenses[i].need_score);
         printf("│  Want Score:     %d/5\n",  expenses[i].want_score);
         printf("│  Importance:     %.2f\n",  (float) expenses[i].importance / 100);
-        printf("│  Recurrence:     %s\n",    (i >= 0 && i <= 2) ? recurrence_str[expenses[i].recurrence] : "Unkown");
+        printf("│  Recurrence:     %s\n",    (rec >= 0 && rec <= 2) ? recurrence_str[rec] : "Unknown");
         printf("│  Planned:        %s\n",    expenses[i].planned ? "Yes" : "No");
-        printf("│  Payment Method: %s\n",    (i >= 0 && i <= 2) ? payment_str[expenses[i].payment_method] : "Unkown");
+        printf("│  Payment Method: %s\n",    (pay >= 0 && pay <= 2) ? payment_str[pay]    : "Unknown");
         printf("│  Time:           %s\n",    time_buf);
         printf("│  Notes:          %s\n",    expenses[i].notes[0] ? expenses[i].notes : "—");
         printf("└─────────────────────────────────────┘\n");
@@ -143,6 +147,7 @@ int expenses_menu(sqlite3* db, int* in_study){
 
     if (user_input == 1){
       printf("How many previous days accounts do you want to see : ");
+      scanf("%d", &if_input);
       getchar();
       printf("\n");
       rc = view_accounts(db, if_input, in_study);
