@@ -5,6 +5,33 @@
 #include "schema.h"
 #include "sql_commands.h"
 
+int expense_entry(sqlite3* db, ExpenseEntry* entries, int count, char* date) {
+  sqlite3_stmt *ppStmt = NULL;
+  if (sqlite3_prepare_v2(db, insert_expense, -1, &ppStmt, NULL) != SQLITE_OK) {
+    fprintf(stderr, "Error preparing stmt for expense entry");
+    return 1;
+  }
+
+  for (int i = 0; i < count; i++){
+    for (int j = 0; j < 9; j ++){
+      sqlite3_bind_int(ppStmt, j + 1, entries[i].arr[j]);
+    }
+    sqlite3_bind_text(ppStmt, 10, entries[i].notes, -1, SQLITE_STATIC);
+    sqlite3_bind_text(ppStmt, 11, date, -1, SQLITE_STATIC);
+
+    if (sqlite3_step(ppStmt) != SQLITE_DONE){
+      fprintf(stderr, "Expense insert failed: %s\n", sqlite3_errmsg(db));
+      sqlite3_finalize(ppStmt);
+      return 1;
+    }
+
+    sqlite3_reset(ppStmt);
+    sqlite3_clear_bindings(ppStmt);
+  }
+  sqlite3_finalize(ppStmt);
+  return 0;
+}
+
 int get_prev_date(sqlite3* db, char* prev_date){
   sqlite3_stmt *ppStmt = NULL;
   if (sqlite3_prepare_v2(db, get_last_log_date, -1, &ppStmt, NULL) != SQLITE_OK ) {

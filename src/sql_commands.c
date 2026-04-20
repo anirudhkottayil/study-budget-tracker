@@ -89,3 +89,8 @@ const char *update_eod_log =
     "screen_time_min = ?, exercise = ?, caffeine_drinks = ?, "
     "stress = ?, productive_feel = ?, notes = ? "
     "WHERE date = ?;";
+
+const char *insert_expense =
+    "INSERT INTO expenses (category, amount_cents, need_score, want_score, "
+    "importance, recurrence, planned, payment_method, time_of_purchase, notes, date) "
+    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
