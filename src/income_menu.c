@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
 #include "income_menu.h"
@@ -57,6 +58,13 @@ int insert_event(sqlite3* db, int* in_study){
 
   rc = sql_command_exec(db, "income_events", insert_income, arr, 2, notes, NULL);
   if (rc) return 1;  
+  char date[11];
+  time_t t = time(NULL);
+  struct tm *tp = localtime(&t);
+  sprintf(date, "%04d-%02d-%02d", tp->tm_year + 1900, tp->tm_mon + 1, tp->tm_mday);
+
+  rc = bank_snapshot(db, date);
+  if (rc) return 1;
   return 0;
 }
 
@@ -125,7 +133,7 @@ int income_menu(sqlite3* db, int* in_study){
         return 1;
       }
     } else if (user_input == 2){
-      rc = insert_event(db, in_study);
+      rc = insert_event(db,in_study);
       if (rc) {
         return 1;
       }
@@ -143,6 +151,8 @@ int income_menu(sqlite3* db, int* in_study){
         return 1;
       } else {
         printf("Success!\n");
+        rc = bank_snapshot(db, date);
+        if (rc) return 1;
       }
 
     } else if (user_input == 4){
