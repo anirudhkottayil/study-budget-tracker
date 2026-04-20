@@ -80,7 +80,7 @@ int main(){
       if (menu_check)  loop = 0;
 
     } else if (user_input == 6){
-      menu_check = tasks_menu(db, &in_study, &tasks, &num_tasks);
+      menu_check = tasks_menu(db, &in_study, &tasks, &num_tasks, &subjects, &num_subjects);
       if (menu_check)  loop = 0;
 
     } else if (user_input == 7){

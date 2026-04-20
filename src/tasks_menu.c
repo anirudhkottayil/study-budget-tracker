@@ -4,24 +4,39 @@
 #include "tasks_menu.h"
 #include "sql_commands.h"
 
-void view_tasks(Task** tasks, int* num_tasks, int* in_study){
+void view_tasks(Task** tasks, int* num_tasks, int* in_study, Subjects** subjects, int* num_subjects){
   if (*in_study){
     printf("IN STUDY SESH\n");
   }
-  printf("| %-3s | %-20s |\n", "ID", "TASK");
-  printf("|-----|----------------------|\n");
-  for (int i = 0; i < *num_tasks; i++){
-      printf("| %-3d | %-20s |\n", (*tasks)[i].id, (*tasks)[i].task);
+  printf("| %-3s | %-20s | %-15s | %-8s | %-8s |\n",
+         "ID", "TASK", "SUBJECT", "EST(min)", "OBS(min)");
+  printf("|-----|----------------------|-----------------|----------|----------|\n");
+
+  for (int i = 0; i < *num_tasks; i++) {
+      // find subject name
+      const char *subj_name = "None";
+      for (int j = 0; j < *num_subjects; j++) {
+          if ((*subjects)[j].id == (*tasks)[i].subject) {
+              subj_name = (*subjects)[j].subject;
+              break;
+          }
+      }
+      printf("| %-3d | %-20s | %-15s | %-8d | %-8d |\n",
+             (*tasks)[i].id,
+             (*tasks)[i].task,
+             subj_name,
+             (*tasks)[i].estimated_mins,
+             (*tasks)[i].observed_mins);
   }
 }
 
-int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int* task_id){
+int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int* task_id, Subjects** subjects, int* num_subjects){
   int rc; int fin_task; int arr[1];
   if (task_id != NULL){
     rc = sql_command_exec(db, "tasks", complete_task, task_id, 1, NULL, NULL);
     return rc ? -1 : 0; 
   }
-  view_tasks(tasks, num_tasks, in_study);
+  view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);
   printf("Which task did you work on\n");
   scanf("%d", &arr[0]);
   printf("Did you finish the task ? (1 if yes)\n");
@@ -59,13 +74,13 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
   getchar();
 
   if (fin_task){
-    rc = complete_a_task(db, NULL, NULL, in_study, &arr[1]);
+    rc = complete_a_task(db, NULL, NULL, in_study, &arr[1], NULL, NULL);
   }
 
   return 0;
 }
 
-int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
+int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** subjects, int* num_subjects){
   int add_idx = -1;
   for (int i = 0; i < *num_tasks; i++){
     if (strcmp((*tasks)[i].task, name) == 0){
@@ -76,13 +91,23 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
 
   if (add_idx != -1) return -1;
 
-  int est[1], rc;
+  int est[2], rc;
   printf("Enter estimated minutes for the task: ");
   scanf("%d", &est[0]);
   getchar();
   printf("\n");
 
-  rc = sql_command_exec(db, "tasks", insert_task, est, 1, name, NULL);
+  printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
+  printf("|-----|----------------------|\n");
+  printf("| %-3d | %-20s |\n", 0, "None");
+  for (int i = 0; i < *num_subjects; i++)
+      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
+  printf("Enter subject ID (0 for none): ");
+  scanf("%d", &est[1]);
+  getchar();
+  printf("\n");
+
+  rc = sql_command_exec(db, "tasks", insert_task, est, 2, name, NULL);
   if (rc){
     fprintf(stderr, "Insert task failed\n");
     return 1;
@@ -96,6 +121,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
   *tasks = temp_ptr;
   *num_tasks = *num_tasks + 1;
   (*tasks)[*num_tasks - 1].id = (int)sqlite3_last_insert_rowid(db);
+  (*tasks)[*num_tasks - 1].subject       = est[1];
   strncpy((*tasks)[*num_tasks - 1].task, name, 49);
   (*tasks)[*num_tasks - 1].estimated_mins = est[0];
   (*tasks)[*num_tasks - 1].observed_mins  = 0;
@@ -104,7 +130,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name){
 }
 
 
-int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
+int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks, Subjects** subjects, int* num_subjects){
 
   int user_input ; int rc; 
   while (1){
@@ -122,7 +148,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
     getchar();
 
     if (user_input == 1){
-      view_tasks(tasks, num_tasks, in_study);
+      view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);
 
     } else if (user_input == 2){
       char task[50];
@@ -131,7 +157,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
       getchar();
       task[49] = '\0';
       printf("\n");
-      rc = add_task(db, tasks, num_tasks, task);
+      rc = add_task(db, tasks, num_tasks, task, subjects, num_subjects);
       if (rc == 1) {
         return 1;
       } else if (rc == -1) {
@@ -150,7 +176,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks){
       }
 
     } else if (user_input == 4){
-        rc = complete_a_task(db, tasks, num_tasks, in_study, NULL);
+        rc = complete_a_task(db, tasks, num_tasks, in_study, NULL, subjects, num_subjects);
       if (rc == 1) {
         printf("Task completion failed\n");
         return 1;

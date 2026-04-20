@@ -13,8 +13,9 @@ void map_tasks(sqlite3_stmt* ppStmt, void* arr, int index){
   tasks[index].id = sqlite3_column_int (ppStmt, 0);
   strncpy(tasks[index].task,(const char*) sqlite3_column_text(ppStmt, 1), 49);
   tasks[index].task[49] = '\0';
-  tasks[index].estimated_mins = sqlite3_column_int (ppStmt, 2);
-  tasks[index].observed_mins = sqlite3_column_int (ppStmt, 3);
+  tasks[index].subject = sqlite3_column_int (ppStmt, 2);
+  tasks[index].estimated_mins = sqlite3_column_int (ppStmt, 3);
+  tasks[index].observed_mins = sqlite3_column_int (ppStmt, 4);
 }
 
 void map_logs(sqlite3_stmt* ppStmt, void* arr, int index){

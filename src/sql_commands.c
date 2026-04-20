@@ -22,7 +22,7 @@ const char *insert_study_session =
     "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 const char *insert_task =
-    "INSERT INTO tasks (estimated_min, name) VALUES (?, ?);";
+    "INSERT INTO tasks (estimated_min, subject, name) VALUES (?, ?, ?);";
 const char *update_task_time =
     "UPDATE tasks SET observed_min = observed_min + ? WHERE id = ?;";
 
@@ -30,7 +30,7 @@ const char *complete_task =
     "UPDATE tasks SET completed = 1 WHERE id = ?;";
 
 const char *get_incomplete_tasks =
-    "SELECT id, name, estimated_min, observed_min FROM tasks WHERE completed = 0;";
+    "SELECT id, name, subject, estimated_min, observed_min FROM tasks WHERE completed = 0;";
 
 const char* count_subjects = "SELECT COUNT(*) FROM subjects;";
 
