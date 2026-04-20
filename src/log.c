@@ -157,6 +157,8 @@ int first_start_day(sqlite3* db, char* date){
   if (rc) return 1;
   rc = expense_entry(db, entry, count, date);
   if (rc) return 1;
+  rc = bank_snapshot(db, date);
+  if (rc) return 1;
 
   return 0;
 }

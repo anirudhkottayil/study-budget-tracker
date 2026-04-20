@@ -28,5 +28,8 @@ extern const char *update_income;
 extern const char *get_last_log_date;
 extern const char *update_eod_log;
 extern const char *insert_expense;
-
+extern const char *insert_bank_snapshot;
+extern const char *update_bank_snapshot;
+extern const char *get_total_income_for_date;
+extern const char *get_total_expenses_for_date;
 #endif

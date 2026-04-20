@@ -78,5 +78,5 @@ int first_run(sqlite3 *db);
 int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date);
 int get_prev_date(sqlite3* db, char* prev_date);
 int expense_entry(sqlite3* db, ExpenseEntry* entries, int count, char* date);
-
+int bank_snapshot(sqlite3* db, char* date);
 #endif

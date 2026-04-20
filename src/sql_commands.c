@@ -94,3 +94,18 @@ const char *insert_expense =
     "INSERT INTO expenses (category, amount_cents, need_score, want_score, "
     "importance, recurrence, planned, payment_method, time_of_purchase, notes, date) "
     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+const char *get_total_expenses_for_date =
+    "SELECT SUM(amount_cents) FROM expenses WHERE date = ?;";
+
+const char *get_total_income_for_date =
+    "SELECT SUM(amount_cents) FROM income_events WHERE date = ?;";
+
+const char *update_bank_snapshot =
+    "UPDATE bank_snapshots SET "
+    "computed_cents = ?, discrepancy_cents = computed_cents - balance_cents "
+    "WHERE date = ?;";
+
+const char *insert_bank_snapshot =
+    "INSERT INTO bank_snapshots (date, balance_cents, computed_cents, discrepancy_cents) "
+    "VALUES (?, ?, ?, 0);";
