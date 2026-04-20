@@ -1,5 +1,5 @@
-#ifndef SQL_COMMANDS_H
-#define SQL_COMMANDS_H
+#ifndef SQLCOMMANDS_H
+#define SQLCOMMANDS_H
 
 extern const char *insert_daily_log;
 extern const char *first_log;
@@ -25,5 +25,8 @@ extern const char *count_income_events;
 extern const char *get_income_events;
 extern const char *insert_income;
 extern const char *update_income;
+extern const char *get_last_log_date;
+extern const char *update_eod_log;
+extern const char *insert_expense;
 
 #endif

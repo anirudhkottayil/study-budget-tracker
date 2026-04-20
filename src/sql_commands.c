@@ -6,8 +6,9 @@ const char* insert_daily_log = "INSERT INTO daily_log ("
         ") VALUES ("
         "    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-const char* first_log = "INSERT INTO daily_log (date, sleep_time, wake_time, sleep_quality, mood, energy) "
-        "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?);";
+const char* first_log = 
+    "INSERT INTO daily_log (date, sleep_time, wake_time, sleep_dur_min, sleep_quality, mood, energy) "
+    "VALUES (date('now', 'localtime'), ?, ?, ?, ?, ?, ?);";
 
 const char* first_bank_balance = "INSERT INTO bank_snapshots (date, balance_cents, computed_cents, discrepancy_cents) "
         "VALUES (date('now', 'localtime'), ?, ?, 0);";
@@ -79,3 +80,17 @@ const char *insert_income =
 const char *update_income =
     "UPDATE income_events SET amount_cents = ?, source = ?, notes = ? "
     "WHERE date = ?;";
+
+const char *get_last_log_date = "SELECT date FROM daily_log ORDER BY date DESC LIMIT 1;";
+
+const char *update_eod_log =
+    "UPDATE daily_log SET "
+    "eat_out_meals = ?, home_cooked = ?, steps = ?, outside_min = ?, "
+    "screen_time_min = ?, exercise = ?, caffeine_drinks = ?, "
+    "stress = ?, productive_feel = ?, notes = ? "
+    "WHERE date = ?;";
+
+const char *insert_expense =
+    "INSERT INTO expenses (category, amount_cents, need_score, want_score, "
+    "importance, recurrence, planned, payment_method, time_of_purchase, notes, date) "
+    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";

@@ -15,7 +15,7 @@
 int main(){
   sqlite3 *db;
   int in_study = 0, study_start = 0, study_stop = 0, distraction_count = 0;
-  int rc, user_input, menu_check;
+  int rc, user_input, menu_check; char prev_date[11];
   int loop = -1;
   rc = initialize_db(&db);
   if (rc){return 0;}
@@ -27,7 +27,6 @@ int main(){
     rc = first_time_data(db); 
     if (rc) { return 1; }
   }
-  
   int num_subjects = count_rows(db, count_subjects);
   Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
   rc = get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
@@ -40,9 +39,20 @@ int main(){
   int num_tasks = count_rows(db, count_tasks);
   Task* tasks = malloc(num_tasks * sizeof(Task));
   rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks, NULL, 0);
-  if (rc){
+  if (rc == -1){
     free_memory(db, subjects, tasks);
     return  1;
+  }
+  char* new_date = check_new_day(db);
+  if (new_date != NULL){
+    strncpy(prev_date, new_date, 10);
+    prev_date[10] = '\0';
+    free(new_date);
+    rc = first_start_day(db, prev_date);
+    if (rc) {
+      free_memory(db, subjects, tasks);
+      return  1;
+    }
   }
 
   while (loop == -1){

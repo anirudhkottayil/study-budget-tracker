@@ -80,5 +80,11 @@ const char *DB_SCHEMA =
     "    estimated_min  INTEGER,"
     "    observed_min   INTEGER DEFAULT 0,"
     "    completed      INTEGER DEFAULT 0"
-    ");";
+    ");"
 
+    "CREATE INDEX IF NOT EXISTS idx_study_sessions_date ON study_sessions(date);"
+    "CREATE INDEX IF NOT EXISTS idx_expenses_date       ON expenses(date);"
+    "CREATE INDEX IF NOT EXISTS idx_income_events_date  ON income_events(date);"
+    "CREATE INDEX IF NOT EXISTS idx_tasks_completed     ON tasks(completed);"
+    "CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);"
+    "CREATE INDEX IF NOT EXISTS idx_tasks_subject        ON tasks(subject);";

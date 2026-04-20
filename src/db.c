@@ -5,6 +5,50 @@
 #include "schema.h"
 #include "sql_commands.h"
 
+int expense_entry(sqlite3* db, ExpenseEntry* entries, int count, char* date) {
+  sqlite3_stmt *ppStmt = NULL;
+  if (sqlite3_prepare_v2(db, insert_expense, -1, &ppStmt, NULL) != SQLITE_OK) {
+    fprintf(stderr, "Error preparing stmt for expense entry");
+    return 1;
+  }
+
+  for (int i = 0; i < count; i++){
+    for (int j = 0; j < 9; j ++){
+      sqlite3_bind_int(ppStmt, j + 1, entries[i].arr[j]);
+    }
+    sqlite3_bind_text(ppStmt, 10, entries[i].notes, -1, SQLITE_STATIC);
+    sqlite3_bind_text(ppStmt, 11, date, -1, SQLITE_STATIC);
+
+    if (sqlite3_step(ppStmt) != SQLITE_DONE){
+      fprintf(stderr, "Expense insert failed: %s\n", sqlite3_errmsg(db));
+      sqlite3_finalize(ppStmt);
+      return 1;
+    }
+
+    sqlite3_reset(ppStmt);
+    sqlite3_clear_bindings(ppStmt);
+  }
+  sqlite3_finalize(ppStmt);
+  return 0;
+}
+
+int get_prev_date(sqlite3* db, char* prev_date){
+  sqlite3_stmt *ppStmt = NULL;
+  if (sqlite3_prepare_v2(db, get_last_log_date, -1, &ppStmt, NULL) != SQLITE_OK ) {
+    fprintf(stderr, "Error preparing stmt for prev date");
+    return 1;
+  }
+
+  if (sqlite3_step(ppStmt) == SQLITE_ROW){
+    strncpy(prev_date, (const char*)sqlite3_column_text(ppStmt, 0), 10);
+    prev_date[10] = '\0';
+  }
+
+  sqlite3_finalize(ppStmt);
+
+  return 0;
+}
+
 
 int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date){
 
@@ -137,7 +181,7 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  for (int i = 0; i < 5; i++){
+  for (int i = 0; i < 6; i++){
     sqlite3_bind_int(ppStmt, i + 1, arr[i]);
   }
 
@@ -154,8 +198,8 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  sqlite3_bind_int(ppStmt, 1, arr[5]);
-  sqlite3_bind_int(ppStmt, 2, arr[5]);
+  sqlite3_bind_int(ppStmt, 1, arr[6]);
+  sqlite3_bind_int(ppStmt, 2, arr[6]);
 
   if (sqlite3_step(ppStmt) != SQLITE_DONE) {
     fprintf(stderr, "Failed to insert first bank balance: %s\n", sqlite3_errmsg(db));
@@ -170,7 +214,7 @@ int first_write_into_db(sqlite3* db, int arr[], char** sub_arr){
     return -1;
   }
 
-  for ( int i = 0 ; i < arr[6]; i++){
+  for ( int i = 0 ; i < arr[7]; i++){
     sqlite3_bind_text(ppStmt, 1, sub_arr[i], -1, SQLITE_STATIC);
 
      if (sqlite3_step(ppStmt) != SQLITE_DONE) {
