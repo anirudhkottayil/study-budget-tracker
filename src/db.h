@@ -14,6 +14,7 @@ typedef struct {
 
 typedef struct {
   int id;
+  int subject;
   int estimated_mins;
   int observed_mins;
   char task[50];

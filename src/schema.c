@@ -77,6 +77,7 @@ const char *DB_SCHEMA =
     "CREATE TABLE IF NOT EXISTS tasks ("
     "    id             INTEGER PRIMARY KEY AUTOINCREMENT,"
     "    name           TEXT,"
+    "    subject        INTEGER REFERENCES subjects(id),"
     "    estimated_min  INTEGER,"
     "    observed_min   INTEGER DEFAULT 0,"
     "    completed      INTEGER DEFAULT 0"
