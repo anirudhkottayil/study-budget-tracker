@@ -5,6 +5,86 @@
 #include "schema.h"
 #include "sql_commands.h"
 
+int bank_snapshot(sqlite3* db, char* date){
+  sqlite3_stmt *ppStmt = NULL;
+  int prev_balance = 0;
+
+  if (sqlite3_prepare_v2(db, "SELECT bank_balance from bank_snapshots order by date desc LIMIT 1;", -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Error getting bank balance: %s\n", sqlite3_errmsg(db));
+    return 1;
+  }
+  if (sqlite3_step(ppStmt) != SQLITE_ROW){
+    fprintf(stderr, "Error getting bank balance: %s\n", sqlite3_errmsg(db));
+    sqlite3_finalize(ppStmt);
+    return 1;
+  }
+  prev_balance = sqlite3_column_int(ppStmt, 0);
+  sqlite3_finalize(ppStmt);
+
+  int total_expenses = 0;
+
+  if (sqlite3_prepare_v2(db, get_total_expenses_for_date, -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Error getting total expenses: %s\n", sqlite3_errmsg(db));
+    return 1;
+  }
+  sqlite3_bind_text(ppStmt, 1, date, -1, SQLITE_STATIC);
+
+  if (sqlite3_step(ppStmt) != SQLITE_ROW){
+    fprintf(stderr, "Error getting total expenses: %s\n", sqlite3_errmsg(db));
+    sqlite3_finalize(ppStmt);
+    return 1;
+  }
+  total_expenses = sqlite3_column_int(ppStmt, 0);
+  sqlite3_finalize(ppStmt);
+
+  int total_income = 0;
+
+  if (sqlite3_prepare_v2(db,get_total_income_for_date, -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Error getting total income: %s\n", sqlite3_errmsg(db));
+    return 1;
+  }
+  sqlite3_bind_text(ppStmt, 1, date, -1, SQLITE_STATIC);
+
+  if (sqlite3_step(ppStmt) != SQLITE_ROW){
+    fprintf(stderr, "Error getting total income: %s\n", sqlite3_errmsg(db));
+    sqlite3_finalize(ppStmt);
+    return 1;
+  }
+  total_income = sqlite3_column_int(ppStmt, 0);
+  sqlite3_finalize(ppStmt);
+
+  int computed_expenses = prev_balance - total_expenses + total_income;
+
+  if (sqlite3_prepare_v2(db,"SELECT COUNT(*) FROM bank_snapshots WHERE date = ?;", -1, &ppStmt, NULL) != SQLITE_OK){
+    fprintf(stderr, "Error getting count : %s\n", sqlite3_errmsg(db));
+    return 1;
+  }
+  sqlite3_bind_text(ppStmt, 1, date, -1, SQLITE_STATIC);
+
+  if (sqlite3_step(ppStmt) != SQLITE_ROW){
+    fprintf(stderr, "Error getting count: %s\n", sqlite3_errmsg(db));
+    sqlite3_finalize(ppStmt);
+    return 1;
+  }
+  int exists = sqlite3_column_int(ppStmt, 0);
+  sqlite3_finalize(ppStmt);
+
+  if (exists) {
+    sqlite3_prepare_v2(db, update_bank_snapshot, -1, &ppStmt, NULL);
+    sqlite3_bind_int (ppStmt, 1, computed_expenses);
+    sqlite3_bind_text(ppStmt, 2, date, -1, SQLITE_STATIC);
+  } else {
+    sqlite3_prepare_v2(db, insert_bank_snapshot, -1, &ppStmt, NULL);
+    sqlite3_bind_text(ppStmt, 1, date,     -1, SQLITE_STATIC);
+    sqlite3_bind_int (ppStmt, 2, computed_expenses);
+    sqlite3_bind_int (ppStmt, 3, computed_expenses);
+  }
+  sqlite3_step(ppStmt);
+  sqlite3_finalize(ppStmt);
+
+  return 0;
+}
+
 int expense_entry(sqlite3* db, ExpenseEntry* entries, int count, char* date) {
   sqlite3_stmt *ppStmt = NULL;
   if (sqlite3_prepare_v2(db, insert_expense, -1, &ppStmt, NULL) != SQLITE_OK) {
