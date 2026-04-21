@@ -17,15 +17,16 @@ int delete_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* na
 
   if (del_idx == -1) return -1;  
 
-  for (int i = del_idx; i < *num_subjects - 1; i++){
-      (*subjects)[i] = (*subjects)[i + 1];
-  }
-
   rc = sql_command_exec(db,"subjects", delete_subject_sql, NULL, 0, name, NULL);
   if (rc) {
     fprintf(stderr, "Delete subject failed db\n");
     return 1;
   }
+
+  for (int i = del_idx; i < *num_subjects - 1; i++){
+      (*subjects)[i] = (*subjects)[i + 1];
+  }
+
   Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects - 1));
   if (temp_ptr == NULL){
     fprintf(stderr, "Realloc subjects failed\n");

@@ -20,6 +20,7 @@ char* check_new_day(sqlite3* db){
   time_t t = time(NULL);
   strftime(date_today, sizeof(date_today), "%Y-%m-%d", localtime(&t));
   if (strcmp(date_today, prev_date) == 0){
+    free(prev_date);
     return NULL;
   } else {
     return prev_date;

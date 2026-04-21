@@ -46,7 +46,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
       }
     }
     (*num_tasks)--;
-    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
     if (tmp == NULL){
       fprintf(stderr, "Realloc task failed\n");
       return 1;
@@ -74,7 +74,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
       }
     }
     (*num_tasks)--;
-    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
     if (tmp == NULL){
       fprintf(stderr, "Realloc task failed\n");
       return 1;
@@ -104,6 +104,12 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
     fprintf(stderr, "Update task time failed\n");
     return -1;
   } 
+  for (int i = 0; i < *num_tasks; i++){
+    if ((*tasks)[i].id == arr[1]){
+      (*tasks)[i].observed_mins += arr[0];
+      break;
+    }
+  }
   printf("Did you finish the task ? (1 if yes)\n");
   scanf("%d",&fin_task);
   getchar();
