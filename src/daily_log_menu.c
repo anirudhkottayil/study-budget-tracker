@@ -11,15 +11,15 @@ void print_logs(Daily_logs* log, int num_logs, int* in_study){
   if (*in_study){
     printf("In Study Session\n");
   }
+  char sleep_buf[32], wake_buf[32];
+  int sleep_hour; int sleep_mins; int wake_hours; int wake_mins;
   for (int i = 0; i < num_logs; i++) {
-    char sleep_buf[32], wake_buf[32];
-    time_t t;
-
-    t = log[i].sleep_time;
-    strftime(sleep_buf, sizeof(sleep_buf), "%H:%M", localtime(&t));
-
-    t = log[i].wake_time;
-    strftime(wake_buf, sizeof(wake_buf), "%H:%M", localtime(&t));
+    sleep_hour = log[i].sleep_time / 100;
+    sleep_mins = log[i].sleep_time % 100;
+    wake_hours = log[i].wake_time / 100;
+    wake_mins = log[i].wake_time % 100;
+    sprintf(sleep_buf, "%02d:%02d", sleep_hour, sleep_mins);
+    sprintf(wake_buf, "%02d:%02d", wake_hours, wake_mins);
 
     printf("┌─────────────────────────────────────┐\n");
     printf("│  Date:            %s\n",     log[i].date);
@@ -68,14 +68,11 @@ int view_logs(sqlite3* db, int input, int* in_study){
 
 int update_log(sqlite3* db, char* date, int* in_study){
   int arr[15]; int rc;
-  printf("Enter sleep time: ");
+  printf("Enter sleep time (24hr format): ");
   scanf("%d", &arr[0]);
   printf("\n");
-  printf("Enter updated wake time: ");
+  printf("Enter updated wake time (24hr format): ");
   scanf("%d", &arr[1]);
-  printf("\n");
-  printf("Enter sleep duration: ");
-  scanf("%d", &arr[2]);
   printf("\n");
   printf("Enter sleep quality: ");
   scanf("%d", &arr[3]);
@@ -117,6 +114,23 @@ int update_log(sqlite3* db, char* date, int* in_study){
   char temp_notes[50];
   fgets(temp_notes, 50, stdin);
   temp_notes[strcspn(temp_notes, "\n")] = '\0'; 
+
+  int sleep_h = arr[0] / 100;
+  int sleep_m = arr[0] % 100;
+  int wake_h  = arr[1] / 100;
+  int wake_m  = arr[1] % 100;
+
+  int sleep_total = sleep_h * 60 + sleep_m;
+  int wake_total  = wake_h  * 60 + wake_m;
+
+  int duration;
+  if (wake_total < sleep_total){
+      // crossed midnight
+      duration = (1440 - sleep_total) + wake_total;
+  } else {
+      duration = wake_total - sleep_total;
+  }
+  arr[2] = duration;
 
   rc = sql_command_exec(db, "daily_log", update_daily_log, arr, 15, temp_notes, date);
   if (rc){

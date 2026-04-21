@@ -195,10 +195,10 @@ int check_first_time_run(){
 
 int first_time_data(sqlite3* db){
   int arr[8]; double amount;
-  printf("Enter time you went to bed: ");
+  printf("Enter time you went to bed (24hr format): ");
   scanf("%d", &arr[0]);
   printf("\n");
-  printf("Enter time you woke up: ");
+  printf("Enter time you woke up (24hr format): ");
   scanf("%d", &arr[1]);
   printf("\n");
   printf("Enter sleep quality (1 to 5): ");
