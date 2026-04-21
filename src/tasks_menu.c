@@ -34,7 +34,25 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
   int rc; int fin_task; int arr[1];
   if (task_id != NULL){
     rc = sql_command_exec(db, "tasks", complete_task, task_id, 1, NULL, NULL);
-    return rc ? -1 : 0; 
+    if (rc) return -1;
+    for (int i = 0; i < *num_tasks; i++){
+      if ((*tasks)[i].id == *task_id){
+        for (int j = i; j < *num_tasks; j++){
+          if (j != *num_tasks -1){
+           (*tasks)[j] = (*tasks)[j+1];
+          }
+        }
+        break;
+      }
+    }
+    (*num_tasks)--;
+    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    if (tmp == NULL){
+      fprintf(stderr, "Realloc task failed\n");
+      return 1;
+    }
+    *tasks = tmp;
+    return 0; 
   }
   view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);
   printf("Which task did you work on\n");
@@ -45,6 +63,23 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
   if (fin_task){
     rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
    if (rc) return -1;
+    for (int i = 0; i < *num_tasks; i++){
+      if ((*tasks)[i].id == arr[0]){
+        for (int j = i; j < *num_tasks; j++){
+          if (j != *num_tasks -1){
+           (*tasks)[j] = (*tasks)[j+1];
+          }
+        }
+        break;
+      }
+    }
+    (*num_tasks)--;
+    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    if (tmp == NULL){
+      fprintf(stderr, "Realloc task failed\n");
+      return 1;
+    }
+    *tasks = tmp;
   }
 
   return 0;
@@ -74,7 +109,7 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
   getchar();
 
   if (fin_task){
-    rc = complete_a_task(db, NULL, NULL, in_study, &arr[1], NULL, NULL);
+    rc = complete_a_task(db, tasks, num_tasks, in_study, &arr[1], NULL, NULL);
   }
 
   return 0;

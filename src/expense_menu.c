@@ -47,7 +47,7 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   // store as int here, cast to double on insert
   // printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
   double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
-  arr[4] = (int) importance * 100;
+  arr[4] = (int)round(importance * 100);
 
   printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
   printf("|-----|------------|\n");
