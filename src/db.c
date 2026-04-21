@@ -9,7 +9,7 @@ int bank_snapshot(sqlite3* db, char* date){
   sqlite3_stmt *ppStmt = NULL;
   int prev_balance = 0;
 
-  if (sqlite3_prepare_v2(db, "SELECT bank_balance from bank_snapshots order by date desc LIMIT 1;", -1, &ppStmt, NULL) != SQLITE_OK){
+  if (sqlite3_prepare_v2(db, "SELECT balance_cents from bank_snapshots order by date desc LIMIT 1;", -1, &ppStmt, NULL) != SQLITE_OK){
     fprintf(stderr, "Error getting bank balance: %s\n", sqlite3_errmsg(db));
     return 1;
   }
