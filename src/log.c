@@ -5,6 +5,7 @@
 #include <time.h>
 #include "log.h"
 #include "db.h"
+#include "expense_menu.h"
 #include "sql_commands.h"
 
 
@@ -28,77 +29,91 @@ char* check_new_day(sqlite3* db){
 void get_daily_log_eod(int arr[], char *notes) {
   printf("Eat out meals (0-3): ");
   scanf("%d", &arr[0]);
+  printf("\n");
 
   printf("Home cooked? (1 = yes, 0 = no): ");
   scanf("%d", &arr[1]);
+  printf("\n");
 
   printf("Steps: ");
   scanf("%d", &arr[2]);
+  printf("\n");
 
   printf("Outside time (mins): ");
   scanf("%d", &arr[3]);
+  printf("\n");
 
   printf("Screen time (mins): ");
   scanf("%d", &arr[4]);
+  printf("\n");
 
   printf("Exercise? (1 = yes, 0 = no): ");
   scanf("%d", &arr[5]);
+  printf("\n");
 
   printf("Caffeine drinks: ");
   scanf("%d", &arr[6]);
+  printf("\n");
 
   printf("Stress (1-5): ");
   scanf("%d", &arr[7]);
+  printf("\n");
 
   printf("Productive feel (1-5): ");
   scanf("%d", &arr[8]);
+  printf("\n");
 
   getchar();
   printf("Notes: ");
   fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
+  printf("\n");
 }
 
 void get_expense_input(int arr[], char *notes) {
     const char *categories[] = {
-        "Food", "Transport", "Groceries", "Utilities",
+        "Food", "Transport", "Groceries", "Utilities", "Rent",
         "Health", "Education", "Entertainment", "Clothing", "Other"
     };
-    const char *recurrence_str[] = { "One-off", "Weekly", "Monthly" };
+    const char *recurrence_str[] = { "One-off", "Weekly", "Fortnightly", "Monthly" };
     const char *payment_str[]    = { "Cash", "Card", "Tap" };
 
     printf("| %-3s | %-15s |\n", "ID", "CATEGORY");
     printf("|-----|------------------|\n");
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
         printf("| %-3d | %-15s |\n", i, categories[i]);
     printf("Enter category: ");
     scanf("%d", &arr[0]);
+    printf("\n");
 
     double amount;
     printf("Enter amount (e.g. 15.00): ");
     scanf("%lf", &amount);
     arr[1] = (int)round(amount * 100);
+    printf("\n");
 
     printf("Enter need score (1-5): ");
     scanf("%d", &arr[2]);
+    printf("\n");
 
     printf("Enter want score (1-5): ");
     scanf("%d", &arr[3]);
+    printf("\n");
 
-    printf("Enter importance (0.00 - 1.00, e.g. 0.75): ");
-    double importance;
-    scanf("%lf", &importance);
+    double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
     arr[4] = (int)round(importance * 100);
 
     printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
     printf("|-----|------------|\n");
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
         printf("| %-3d | %-10s |\n", i, recurrence_str[i]);
     printf("Enter recurrence: ");
     scanf("%d", &arr[5]);
+    printf("\n");
 
     printf("Planned? (1 = yes, 0 = no): ");
     scanf("%d", &arr[6]);
+    printf("\n");
 
     printf("| %-3s | %-10s |\n", "ID", "PAYMENT");
     printf("|-----|------------|\n");
@@ -106,6 +121,7 @@ void get_expense_input(int arr[], char *notes) {
         printf("| %-3d | %-10s |\n", i, payment_str[i]);
     printf("Enter payment method: ");
     scanf("%d", &arr[7]);
+    printf("\n");
 
     arr[8] = (int)time(NULL);  // time_of_purchase
 
@@ -113,6 +129,7 @@ void get_expense_input(int arr[], char *notes) {
     printf("Notes: ");
     fgets(notes, 500, stdin);
     notes[strcspn(notes, "\n")] = '\0';
+    printf("\n");
 
 }
 
@@ -180,19 +197,26 @@ int first_time_data(sqlite3* db){
   int arr[8]; double amount;
   printf("Enter time you went to bed: ");
   scanf("%d", &arr[0]);
+  printf("\n");
   printf("Enter time you woke up: ");
   scanf("%d", &arr[1]);
+  printf("\n");
   printf("Enter sleep quality (1 to 5): ");
   scanf("%d", &arr[3]);
+  printf("\n");
   printf("Enter mood (1 to 5): ");
   scanf("%d", &arr[4]);
+  printf("\n");
   printf("Enter energy (1 to 5): ");
   scanf("%d", &arr[5]);
+  printf("\n");
   printf("Enter your bank balance: ");
   scanf("%lf", &amount);
+  printf("\n");
   printf("Enter how many subjects do you want: ");
   scanf("%d", &arr[7]);
   getchar();
+  printf("\n");
   char** sub_arr = malloc (arr[7]* sizeof(char*));
   for (int i = 0; i < arr[7]; i++){
     sub_arr[i] = malloc(50 * sizeof(char));
