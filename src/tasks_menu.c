@@ -46,7 +46,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
       }
     }
     (*num_tasks)--;
-    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
     if (tmp == NULL){
       fprintf(stderr, "Realloc task failed\n");
       return 1;
@@ -74,7 +74,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
       }
     }
     (*num_tasks)--;
-    Task* tmp = realloc(tasks, *num_tasks * sizeof(Task));
+    Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
     if (tmp == NULL){
       fprintf(stderr, "Realloc task failed\n");
       return 1;
