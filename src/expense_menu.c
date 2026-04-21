@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -14,42 +15,51 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   int arr[9];
   char notes[500];
   const char *categories[] = {
-      "Food", "Transport", "Groceries", "Utilities",
+      "Food", "Transport", "Groceries", "Utilities", "Rent",
       "Health", "Education", "Entertainment", "Clothing", "Other"
   };
-  const char *recurrence_str[] = { "One-off", "Weekly", "Monthly" };
+  const char *recurrence_str[] = { "One-off", "Weekly","Fortnighly" ,"Monthly" };
   const char *payment_str[]    = { "Cash", "Card", "Tap" };
 
   printf("| %-3s | %-15s |\n", "ID", "CATEGORY");
   printf("|-----|------------------|\n");
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i < 10; i++)
       printf("| %-3d | %-15s |\n", i, categories[i]);
   printf("Enter category: ");
   scanf("%d", &arr[0]);
+  printf("\n");
 
-  printf("Enter amount in cents (e.g. 1500 = $15.00): ");
-  scanf("%d", &arr[1]);
+  double amount;
+  printf("Enter amount (e.g. 15.00): ");
+  scanf("%lf", &amount);
+  arr[1] = (int)round(amount * 100);
+  printf("\n");
 
   printf("Enter need score (1-5): ");
   scanf("%d", &arr[2]);
+  printf("\n");
 
   printf("Enter want score (1-5): ");
   scanf("%d", &arr[3]);
+  printf("\n");
 
   // importance computed from need and want, scaled to int (*100)
   // store as int here, cast to double on insert
-  printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
-  scanf("%d", &arr[4]);
+  // printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
+  double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
+  arr[4] = (int) importance * 100;
 
   printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
   printf("|-----|------------|\n");
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 4; i++)
       printf("| %-3d | %-10s |\n", i, recurrence_str[i]);
   printf("Enter recurrence: ");
   scanf("%d", &arr[5]);
+  printf("\n");
 
   printf("Planned? (1 = yes, 0 = no): ");
   scanf("%d", &arr[6]);
+  printf("\n");
 
   printf("| %-3s | %-10s |\n", "ID", "PAYMENT");
   printf("|-----|------------|\n");
@@ -57,6 +67,7 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
       printf("| %-3d | %-10s |\n", i, payment_str[i]);
   printf("Enter payment method: ");
   scanf("%d", &arr[7]);
+  printf("\n");
 
   arr[8] = (int)time(NULL);  // time_of_purchase
 
@@ -64,6 +75,7 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   printf("Enter notes: ");
   fgets(notes, 500, stdin);
   notes[strcspn(notes, "\n")] = '\0';
+  printf("\n");
 
   int rc = sql_command_exec(db, "expenses", update_expense, arr, 9, notes, date);
   if (rc){
@@ -79,10 +91,10 @@ void print_expenses(Expense *expenses, int count, int* in_study) {
     printf("In Study Session\n");
   }
     const char *categories[] = {
-        "Food", "Transport", "Groceries", "Utilities",
+        "Food", "Transport", "Groceries", "Utilities", "Rent",
         "Health", "Education", "Entertainment", "Clothing", "Other"
     };
-    const char *recurrence_str[] = { "One-off", "Weekly", "Monthly" };
+    const char *recurrence_str[] = { "One-off", "Weekly", "Fortnightly","Monthly" };
     const char *payment_str[]    = { "Cash", "Card", "Tap" };
 
     for (int i = 0; i < count; i++) {
@@ -97,12 +109,12 @@ void print_expenses(Expense *expenses, int count, int* in_study) {
         printf("┌─────────────────────────────────────┐\n");
         printf("│  ID:             %d\n",    expenses[i].id);
         printf("│  Date:           %s\n",    expenses[i].date);
-        printf("│  Category:       %s\n",    (cat >= 0 && cat <= 8) ? categories[cat] : "Unknown");
+        printf("│  Category:       %s\n",    (cat >= 0 && cat <= 9) ? categories[cat] : "Unknown");
         printf("│  Amount:         $%.2f\n", expenses[i].amount_cents / 100.0);
         printf("│  Need Score:     %d/5\n",  expenses[i].need_score);
         printf("│  Want Score:     %d/5\n",  expenses[i].want_score);
         printf("│  Importance:     %.2f\n",  (float) expenses[i].importance / 100);
-        printf("│  Recurrence:     %s\n",    (rec >= 0 && rec <= 2) ? recurrence_str[rec] : "Unknown");
+        printf("│  Recurrence:     %s\n",    (rec >= 0 && rec <= 3) ? recurrence_str[rec] : "Unknown");
         printf("│  Planned:        %s\n",    expenses[i].planned ? "Yes" : "No");
         printf("│  Payment Method: %s\n",    (pay >= 0 && pay <= 2) ? payment_str[pay]    : "Unknown");
         printf("│  Time:           %s\n",    time_buf);
