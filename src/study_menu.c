@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "db.h"
 #include "sql_commands.h"
@@ -73,9 +74,20 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   arr[0] = (int)duration/60;
   getchar();
 
+  int adx = -1;
+  for (int i = 0; i < *task_num; i++){
+    if ((*tasks)[i].id == arr[1]){
+      adx = i;
+      break;
+    }
+  }
+
+  if (adx == -1) return 1;
+
   rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
 
   if (rc) return -1;
+  (*tasks)[adx].observed_mins += duration;
 
   printf("Did you finish the task ? (1 if yes)\n");
   scanf("%d",&fin_task);
@@ -83,6 +95,22 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   if (fin_task){
     rc = sql_command_exec(db, "tasks", complete_task, &arr[1], 1, NULL, NULL);
     if (rc) return -1;
+    for (; adx < *task_num; adx++){
+      if (adx == (*task_num-1)) break;
+      (*tasks)[adx] = (*tasks)[adx+1];
+    }
+
+    (*task_num)--;
+    if (*task_num == 0){
+      free(*tasks);
+      return 0;
+    }
+    Task* tmp = realloc(*tasks, *task_num * sizeof(Task));
+    if (tmp == NULL){
+      fprintf(stderr, "Error resizing struct task on completion in study session\n");
+      return -1;
+    }
+    *tasks = tmp;
   }
 
   return 0;
