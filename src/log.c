@@ -14,7 +14,8 @@ char* check_new_day(sqlite3* db){
   char* prev_date = malloc(11*sizeof(char));
   int rc = get_prev_date(db, prev_date);
   if (rc){
-    fprintf(stderr, "Error gettin previous day date\n");
+    free(prev_date);
+    fprintf(stderr, "Error getting previous day date\n");
     return NULL;
   }
   time_t t = time(NULL);
@@ -128,7 +129,7 @@ void get_expense_input(int arr[], char *notes) {
 
     getchar();
     printf("Notes: ");
-    fgets(notes, 500, stdin);
+    fgets(notes, 50, stdin);
     notes[strcspn(notes, "\n")] = '\0';
     printf("\n");
 
