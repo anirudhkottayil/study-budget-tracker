@@ -215,10 +215,16 @@ int first_time_data(sqlite3* db){
   printf("Enter your bank balance: ");
   scanf("%lf", &amount);
   printf("\n");
-  printf("Enter how many subjects do you want: ");
-  scanf("%d", &arr[7]);
+  arr[7] = 0;
+  while (arr[7] <= 0){
+    printf("Enter how many subjects do you want: ");
+    scanf("%d", &arr[7]);
+    printf("\n");
+    if (arr[7] == 0){
+      printf("You cant study with 0 subjects. Atleast 1 please.\n");
+    }
+  }
   getchar();
-  printf("\n");
   char** sub_arr = malloc (arr[7]* sizeof(char*));
   for (int i = 0; i < arr[7]; i++){
     sub_arr[i] = malloc(50 * sizeof(char));
@@ -251,6 +257,6 @@ int first_time_data(sqlite3* db){
 
 void free_memory(sqlite3* db, Subjects* subjects, Task* task){
   sqlite3_close(db);
-  free(subjects);
-  free(task);
+  if (subjects != NULL) free(subjects);
+  if (task != NULL) free(task);
 }

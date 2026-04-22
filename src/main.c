@@ -37,8 +37,8 @@ int main(){
   }
 
   int num_tasks = count_rows(db, count_tasks);
-  Task* tasks = malloc(num_tasks * sizeof(Task));
-  rc = get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks, NULL, 0);
+  Task* tasks = (num_tasks == 0) ? NULL : malloc(num_tasks * sizeof(Task));
+  rc = (num_tasks == 0) ? 0 : get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks, NULL, 0);
   if (rc == -1){
     free_memory(db, subjects, tasks);
     return  1;

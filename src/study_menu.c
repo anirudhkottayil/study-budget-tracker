@@ -55,7 +55,7 @@ int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
   getchar();
 
   printf("Enter any notes you have on the session\n");
-  fgets(notes, 500, stdin);
+  fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
 
   return 0;
@@ -64,6 +64,9 @@ int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
 
 int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   int arr[3]; int rc; int fin_task;
+  if (*task_num == 0){
+    return 0;
+  }
   printf("Which task did you work on\n");
   printf("| %-3s | %-20s |\n", "ID", "TASK");
   printf("|-----|----------------------|\n");
@@ -122,7 +125,7 @@ int post_study_session(sqlite3*db, int* study_start, int* study_stop, int* distr
   arr[1] = *study_stop;
   arr[2] = (*study_stop - *study_start) / 60;
   arr[9] = *distraction_count;
-  char notes[500];
+  char notes[50];
   int rc = get_study_info(arr, subjects, sub_num, notes);
   if (rc){
     return 1;

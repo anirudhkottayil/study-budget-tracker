@@ -8,6 +8,10 @@ void view_tasks(Task** tasks, int* num_tasks, int* in_study, Subjects** subjects
   if (*in_study){
     printf("IN STUDY SESH\n");
   }
+  if (*num_tasks == 0){
+    printf("No unfinished tasks to display\n");
+    return;
+  }
   printf("| %-3s | %-20s | %-15s | %-8s | %-8s |\n",
          "ID", "TASK", "SUBJECT", "EST(min)", "OBS(min)");
   printf("|-----|----------------------|-----------------|----------|----------|\n");
@@ -28,6 +32,8 @@ void view_tasks(Task** tasks, int* num_tasks, int* in_study, Subjects** subjects
              (*tasks)[i].estimated_mins,
              (*tasks)[i].observed_mins);
   }
+
+  return;
 }
 
 int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int* task_id, Subjects** subjects, int* num_subjects){
@@ -133,6 +139,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** s
   if (add_idx != -1) return -1;
 
   int est[2], rc;
+  est[0] = 0;
   printf("Enter estimated minutes for the task: ");
   scanf("%d", &est[0]);
   getchar();
@@ -143,7 +150,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** s
   printf("| %-3d | %-20s |\n", 0, "None");
   for (int i = 0; i < *num_subjects; i++)
       printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
-  printf("Enter subject ID (0 for none): ");
+  printf("Enter subject ID (-1 for none): ");
   scanf("%d", &est[1]);
   getchar();
   printf("\n");
