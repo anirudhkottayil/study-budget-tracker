@@ -14,7 +14,8 @@ char* check_new_day(sqlite3* db){
   char* prev_date = malloc(11*sizeof(char));
   int rc = get_prev_date(db, prev_date);
   if (rc){
-    fprintf(stderr, "Error gettin previous day date\n");
+    free(prev_date);
+    fprintf(stderr, "Error getting previous day date\n");
     return NULL;
   }
   time_t t = time(NULL);
@@ -128,7 +129,7 @@ void get_expense_input(int arr[], char *notes) {
 
     getchar();
     printf("Notes: ");
-    fgets(notes, 500, stdin);
+    fgets(notes, 50, stdin);
     notes[strcspn(notes, "\n")] = '\0';
     printf("\n");
 
@@ -214,10 +215,16 @@ int first_time_data(sqlite3* db){
   printf("Enter your bank balance: ");
   scanf("%lf", &amount);
   printf("\n");
-  printf("Enter how many subjects do you want: ");
-  scanf("%d", &arr[7]);
+  arr[7] = 0;
+  while (arr[7] <= 0){
+    printf("Enter how many subjects do you want: ");
+    scanf("%d", &arr[7]);
+    printf("\n");
+    if (arr[7] == 0){
+      printf("You cant study with 0 subjects. Atleast 1 please.\n");
+    }
+  }
   getchar();
-  printf("\n");
   char** sub_arr = malloc (arr[7]* sizeof(char*));
   for (int i = 0; i < arr[7]; i++){
     sub_arr[i] = malloc(50 * sizeof(char));
@@ -250,6 +257,6 @@ int first_time_data(sqlite3* db){
 
 void free_memory(sqlite3* db, Subjects* subjects, Task* task){
   sqlite3_close(db);
-  free(subjects);
-  free(task);
+  if (subjects != NULL) free(subjects);
+  if (task != NULL) free(task);
 }
