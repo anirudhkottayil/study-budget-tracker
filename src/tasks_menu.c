@@ -93,6 +93,10 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
 
 int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
   int arr[3]; int rc; int fin_task;
+  if (*num_tasks == 0){
+    printf("No unfinished tasks to display.\n");
+    return 0;
+  }
   printf("Which task did you work on\n");
   printf("| %-3s | %-20s |\n", "ID", "TASK");
   printf("|-----|----------------------|\n");
@@ -129,14 +133,16 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study){
 
 int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** subjects, int* num_subjects){
   int add_idx = -1;
-  for (int i = 0; i < *num_tasks; i++){
-    if (strcmp((*tasks)[i].task, name) == 0){
-        add_idx = i;
-        break;
+  if (*num_tasks > 0){
+    for (int i = 0; i < *num_tasks; i++){
+      if (strcmp((*tasks)[i].task, name) == 0){
+          add_idx = i;
+          break;
+      }
     }
+    if (add_idx != -1) return -1;
   }
 
-  if (add_idx != -1) return -1;
 
   int est[2], rc;
   est[0] = 0;
