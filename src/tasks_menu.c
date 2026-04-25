@@ -4,6 +4,7 @@
 #include "tasks_menu.h"
 #include "utils.h"
 #include "sql_commands.h"
+#include "subject_menu.h"
 
 void view_tasks(Task** tasks, int* num_tasks, int* in_study, Subjects** subjects, int* num_subjects){
   if (*in_study){
@@ -126,7 +127,7 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study,Subject
   return 0;
 }
 
-int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** subjects, int* num_subjects){
+int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** subjects, int* num_subjects, int* in_study){
   int add_idx = -1;
   if (*num_tasks > 0){
     for (int i = 0; i < *num_tasks; i++){
@@ -145,7 +146,8 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** s
   scanf("%d", &est[0]);
   getchar();
   printf("\n");
-
+  
+  view_subjects(subjects, num_subjects, in_study);
   printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
   printf("|-----|----------------------|\n");
   printf("| %-3d | %-20s |\n", 0, "None");
@@ -203,7 +205,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks, Subject
       getchar();
       task[49] = '\0';
       printf("\n");
-      rc = add_task(db, tasks, num_tasks, task, subjects, num_subjects);
+      rc = add_task(db, tasks, num_tasks, task, subjects, num_subjects, in_study);
       if (rc == 1) {
         return 1;
       } else if (rc == -1) {

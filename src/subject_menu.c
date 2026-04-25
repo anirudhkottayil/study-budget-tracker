@@ -65,14 +65,19 @@ int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name)
 }
 
 int view_subjects(Subjects** subjects, int* num_subjects, int* in_study){
+  // change in tasks file for add tasks or update tasks 
+  // use sl no
+  if (*num_subjects == 0){
+    return 0;
+  }
   if (*in_study){
     printf("IN STUDY SESH\n");
   }
 
-  printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
+  printf("| %-4s | %-3s | %-20s |\n","No:", "ID", "SUBJECT");
   printf("|-----|----------------------|\n");
   for (int i = 0; i < *num_subjects; i++){
-      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
+      printf("| %-4d | %-3d | %-20s |\n", i + 1, (*subjects)[i].id, (*subjects)[i].subject);
   }
   return 0;
 }
