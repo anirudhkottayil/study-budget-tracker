@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include <stdlib.h>
 #include "income_menu.h"
 #include "db.h"
@@ -10,8 +11,8 @@
 #include "constants.h"
 
 int get_income_input(int* arr, char *notes) {
-
-  arr[0] = read_int_input("Enter amount in cents (e.g. 150000 = $1500.00): ", 1, 2147483647);
+  double amount = read_double_input("Enter amount: ", 1.0, 2147483647.0);
+  arr[0] = (int)round(amount * 100);
 
   printf("| %-3s | %-10s |\n", "ID", "SOURCE");
   printf("|-----|------------|\n");

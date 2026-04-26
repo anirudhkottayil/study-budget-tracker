@@ -77,7 +77,7 @@ int update_log(sqlite3* db, char* date, int* in_study){
   arr[3] = read_int_input("Enter sleep quality: ", 1, 5);
   arr[4] = read_int_input("Enter mood: ", 1, 5);
   arr[5] = read_int_input("Enter energy: ", 1, 5);
-  arr[6] = read_int_input("Enter meals you ate out: ", 0, 5);
+  arr[6] = read_int_input("Enter meals you ate out: ", 0, 3);
   arr[7] = read_int_input("Enter home cooked meals: ", 0, 1);
   arr[8] = read_int_input("Enter steps: ", 0, 65000);
   arr[9] = read_int_input("Enter outside mins: ", 0, 1080);
