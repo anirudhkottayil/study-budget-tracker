@@ -5,6 +5,7 @@
 #include "daily_log_menu.h"
 #include "db.h"
 #include "sql_commands.h"
+#include "utils.h"
 #include "mapper_func.h"
 
 void print_logs(Daily_logs* log, int num_logs, int* in_study){
@@ -43,18 +44,21 @@ void print_logs(Daily_logs* log, int num_logs, int* in_study){
   }
 }
 
-int view_logs(sqlite3* db, int input, int* in_study){
+int count_logs(sqlite3* db){
 
   int arr[1];
   int db_rows = count_rows(db, count_daily_logs);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for daily logs\n");
-    return 1;
+    return -1;
   }
-  arr[0]= (input > db_rows) ? db_rows : input;
+  return db_rows;
+}
 
-  if (arr[0] == 0) return 0;
-  Daily_logs* logs = malloc(arr[0] * sizeof(Daily_logs));
+int view_logs(sqlite3* db, int input, int* in_study){
+
+  int arr[1] = {input};
+  Daily_logs* logs = malloc(input * sizeof(Daily_logs));
   int rc = get_rows(db, get_n_logs, logs, map_logs, arr, 1) ;
   if (rc == -1){
     fprintf(stderr, "Error getting rows for daily logs\n");
@@ -68,49 +72,20 @@ int view_logs(sqlite3* db, int input, int* in_study){
 
 int update_log(sqlite3* db, char* date, int* in_study){
   int arr[15]; int rc;
-  printf("Enter sleep time (24hr format): ");
-  scanf("%d", &arr[0]);
-  printf("\n");
-  printf("Enter updated wake time (24hr format): ");
-  scanf("%d", &arr[1]);
-  printf("\n");
-  printf("Enter sleep quality: ");
-  scanf("%d", &arr[3]);
-  printf("\n");
-  printf("Enter mood: ");
-  scanf("%d", &arr[4]);
-  printf("\n");
-  printf("Enter energy: ");
-  scanf("%d", &arr[5]);
-  printf("\n");
-  printf("Enter eat out meals: ");
-  scanf("%d", &arr[6]);
-  printf("\n");
-  printf("Enter home cooked meals: ");
-  scanf("%d", &arr[7]);
-  printf("\n");
-  printf("Enter steps: ");
-  scanf("%d", &arr[8]);
-  printf("\n");
-  printf("Enter outside mins: ");
-  scanf("%d", &arr[9]);
-  printf("\n");
-  printf("Enter screen time mins: ");
-  scanf("%d", &arr[10]);
-  printf("\n");
-  printf("Enter exercise: ");
-  scanf("%d", &arr[11]);
-  printf("\n");
-  printf("Enter caffeine drinks: ");
-  scanf("%d", &arr[12]);
-  printf("\n");
-  printf("Enter stress: ");
-  scanf("%d", &arr[13]);
-  printf("\n");
-  printf("Enter productive feel: ");
-  scanf("%d", &arr[14]);
-  printf("\n");
-  getchar();
+  arr[0] = read_int_input("Enter sleep time (24hr format): ", 0000, 2359);
+  arr[1] = read_int_input("Enter updated wake time (24hr format): ", 0000, 2359);
+  arr[3] = read_int_input("Enter sleep quality: ", 1, 5);
+  arr[4] = read_int_input("Enter mood: ", 1, 5);
+  arr[5] = read_int_input("Enter energy: ", 1, 5);
+  arr[6] = read_int_input("Enter meals you ate out: ", 0, 5);
+  arr[7] = read_int_input("Enter home cooked meals: ", 0, 1);
+  arr[8] = read_int_input("Enter steps: ", 0, 65000);
+  arr[9] = read_int_input("Enter outside mins: ", 0, 1080);
+  arr[10] = read_int_input("Enter screen time mins: ", 1, 1080);
+  arr[11] = read_int_input("Enter exercise:", 0, 1);
+  arr[12] = read_int_input("Enter caffeine drinks: ", 0, 5);
+  arr[13] = read_int_input("Enter stress: ", 0, 5);
+  arr[14] = read_int_input("Enter productive feel: ", 1, 5);
   char temp_notes[50];
   fgets(temp_notes, 50, stdin);
   temp_notes[strcspn(temp_notes, "\n")] = '\0'; 
@@ -156,32 +131,27 @@ int daily_log_menu(sqlite3* db, int* in_study){
     getchar();
 
     if (user_input == 1){
-      printf("How many previous days logs do you want to see : ");
-      scanf("%d", &if_input);
-      getchar();
-      printf("\n");
-      rc = view_logs(db, if_input, in_study);
-      if (rc) {
-        return 1;
+      int logs = count_logs(db);
+      if (logs == -1) return 1;
+      int num = read_int_input("How many previous days logs do you want to see : ", 0, logs);
+      if (num > 0){
+        rc = view_logs(db, num, in_study);
+        if (rc) {
+          return 1;
+        }
       }
     } else if (user_input == 2){
-      char date[11];
-      printf("Enter date of the log you want to update (YYYY-MM-DD): ");
-      scanf("%10s", date);
-      getchar();
-      date[10] = '\0';
-      printf("\n");
-      rc = update_log(db, date, in_study);
+      char* curr_date = read_date_input("Enter date of the log you want to update (YYYY-MM-DD): ");
+      rc = update_log(db, curr_date, in_study);
+      free(curr_date);
       if (rc) {
         return 1;
       }
     } else if (user_input == 3){
       break;
-
     } else {
       printf("Invalid input!! Try again\n");
     }
   }
   return 0;
-
 }
