@@ -16,57 +16,25 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   }
   int arr[9];
   char notes[500];
-  printf("| %-3s | %-15s |\n", "ID", "CATEGORY");
-  printf("|-----|------------------|\n");
-  for (int i = 0; i < 10; i++)
-      printf("| %-3d | %-15s |\n", i, categories[i]);
-  printf("Enter category: ");
-  scanf("%d", &arr[0]);
-  printf("\n");
 
-  double amount;
-  printf("Enter amount (e.g. 15.00): ");
-  scanf("%lf", &amount);
+  int cat_index = print_category();
+  arr[0] = read_int_input("Enter category: ", 0, cat_index);
+  double amount = read_double_input("Enter amount (e.g. 15.00): ", 1.0, 10000000.0);
   arr[1] = (int)round(amount * 100);
-  printf("\n");
-
-  printf("Enter need score (1-5): ");
-  scanf("%d", &arr[2]);
-  printf("\n");
-
-  printf("Enter want score (1-5): ");
-  scanf("%d", &arr[3]);
-  printf("\n");
-
+  arr[2] = read_int_input("Enter need score (1-5): ", 1, 5);
+  arr[3] = read_int_input("Enter want score (1-5): ", 1, 5);
   // importance computed from need and want, scaled to int (*100)
   // store as int here, cast to double on insert
   // printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
   double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
   arr[4] = (int)round(importance * 100);
-
-  printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
-  printf("|-----|------------|\n");
-  for (int i = 0; i < 4; i++)
-      printf("| %-3d | %-10s |\n", i, recurrence_str[i]);
-  printf("Enter recurrence: ");
-  scanf("%d", &arr[5]);
-  printf("\n");
-
-  printf("Planned? (1 = yes, 0 = no): ");
-  scanf("%d", &arr[6]);
-  printf("\n");
-
-  printf("| %-3s | %-10s |\n", "ID", "PAYMENT");
-  printf("|-----|------------|\n");
-  for (int i = 0; i < 3; i++)
-      printf("| %-3d | %-10s |\n", i, payment_str[i]);
-  printf("Enter payment method: ");
-  scanf("%d", &arr[7]);
-  printf("\n");
-
+  int rec_index = print_recurrence();
+  arr[5] = read_int_input("Enter recurrence: ", 0, rec_index);
+  arr[6] = read_int_input("Planned? (1 = yes, 0 = no): ", 0, 1);
+  int pay_index = print_payment();
+  arr[7] = read_int_input("Enter payment method: ", 0, pay_index);
   arr[8] = (int)time(NULL);  // time_of_purchase
 
-  getchar();
   printf("Enter notes: ");
   fgets(notes, 500, stdin);
   notes[strcspn(notes, "\n")] = '\0';
@@ -145,8 +113,7 @@ int expenses_menu(sqlite3* db, int* in_study){
     printf("Enter 1 to view accounts\n");
     printf("Enter 2 to update accounts\n");
     printf("Enter 3 to go back to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 3);
 
     if (user_input == 1){
       int account_count = count_accounts(db);
