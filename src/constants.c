@@ -1,4 +1,7 @@
 #include<stdio.h>
+
+const char* environments[] = {"Desk", "Bed", "Couch", "Kitchen Table", "Work Table"};
+
 const char *categories[] = {
       "Food", "Transport", "Groceries", "Utilities", "Rent",
       "Health", "Education", "Entertainment", "Clothing", "Other"
@@ -34,5 +37,18 @@ int print_payment(){
   printf("|-----|------------|\n");
   for (; i < 3; i++)
       printf("| %-3d | %-10s |\n", i, payment_str[i]);
+  return i;
+}
+
+int print_environment(){
+  int i = 0;
+  int env_count = 5;
+  printf("| %-3s | %-15s |\n", "ID", "ENVIRONMENT");
+  printf("|-----|-----------------|\n");
+  for (; i < env_count; i++){
+      printf("| %-3d | %-15s |\n", i, environments[i]);
+  }
+  printf("|-----|-----------------|\n");
+
   return i;
 }

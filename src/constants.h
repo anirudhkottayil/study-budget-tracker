@@ -10,6 +10,8 @@ extern const char* sources[];
 int print_category();
 int print_recurrence();
 int print_payment();
+int print_environment();
+
 
 
 #endif

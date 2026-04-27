@@ -5,39 +5,8 @@
 #include "utils.h"
 #include "sql_commands.h"
 #include "subject_menu.h"
+#include "view_menu.h"
 
-void view_tasks(Task** tasks, int* num_tasks, int* in_study, Subjects** subjects, int* num_subjects){
-  if (*in_study){
-    printf("IN STUDY SESH\n");
-  }
-  if (*num_tasks == 0){
-    printf("No unfinished tasks to display\n");
-    return;
-  }
-  printf("| %-4s | %-3s | %-20s | %-15s | %-8s | %-8s |\n",
-       "NO:",  "ID", "TASK", "SUBJECT", "EST(min)", "OBS(min)");
-  printf("|-----|----------------------|-----------------|----------|----------|\n");
-
-  for (int i = 0; i < *num_tasks; i++) {
-      // find subject name
-      const char *subj_name = "None";
-      for (int j = 0; j < *num_subjects; j++) {
-          if ((*subjects)[j].id == (*tasks)[i].subject) {
-              subj_name = (*subjects)[j].subject;
-              break;
-          }
-      }
-      printf("| %-4d | %-3d | %-20s | %-15s | %-8d | %-8d |\n",
-             i + 1,
-             (*tasks)[i].id,
-             (*tasks)[i].task,
-             subj_name,
-             (*tasks)[i].estimated_mins,
-             (*tasks)[i].observed_mins);
-  }
-
-  return;
-}
 
 int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int* task_id, Subjects** subjects, int* num_subjects){
   int rc; int fin_task; int arr[1];

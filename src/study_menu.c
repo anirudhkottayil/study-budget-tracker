@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "db.h"
 #include "sql_commands.h"
-#include <time.h>
+#include "constants.h"
+#include "utils.h"
+#include "view_menu.h"
 
 int main_menu(int* in_study){
   int user_input;
@@ -19,64 +22,35 @@ int main_menu(int* in_study){
   printf("Enter 5 for income menu\n");
   printf("Enter 6 for Tasks menu\n");
   printf("Enter 7 to exit\n");
-  scanf("%d", &user_input);
-  getchar();
-
-
-
+  user_input = read_int_input("", 1, 7);
   return user_input;
 }
 
 int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
-  const char* environments[] = {"Desk", "Bed", "Couch", "Kitchen Table", "Work Table"};
-  int env_count = 5;
-  printf("How was the mood before the sesh (1 to 5)\n");
-  scanf("%d",&arr[3]);
-  printf("How was the mood after the sesh (1 to 5)\n");
-  scanf("%d",&arr[4]);
-  printf("How was the energy before the sesh (1 to 5)\n");
-  scanf("%d",&arr[5]);
-  printf("How was the focus during the sesh (1 to 5)\n");
-  scanf("%d",&arr[6]);
-  printf("Which subject did you study\n");
-  printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
-  printf("|-----|----------------------|\n");
-  for (int i = 0; i < *sub_num; i++){
-      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
-  }
-  scanf("%d",&arr[7]);
-  printf("| %-3s | %-15s |\n", "ID", "ENVIRONMENT");
-  printf("|-----|-----------------|\n");
-  for (int i = 0; i < env_count; i++){
-      printf("| %-3d | %-15s |\n", i, environments[i]);
-  }
-  printf("|-----|-----------------|\n");
-  scanf("%d",&arr[8]);
-  getchar();
-
+  arr[3] = read_int_input("How was the mood before the sesh (1 to 5)",1,5);
+  arr[4] = read_int_input("How was the mood after the sesh (1 to 5)",1,5);
+  arr[5] = read_int_input("How was the energy before the sesh (1 to 5)",1,5);
+  arr[6] = read_int_input("How was the focus during the sesh (1 to 5)",1,5);
+  view_subjects(subjects, sub_num, NULL);
+  arr[7] = read_int_input("Which subject did you study (No:)", 1, *sub_num) - 1;
+  int env = print_environment();
+  arr[8] = read_int_input("Enter the ID of the environment", 0, env);
   printf("Enter any notes you have on the session\n");
   fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
-
   return 0;
   
 }
 
-int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
+int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration, Subjects** subjects, int* num_subjects){
   int arr[3]; int rc; int fin_task;
   if (*task_num == 0){
     return 0;
   }
-  printf("Which task did you work on\n");
-  printf("| %-3s | %-20s |\n", "ID", "TASK");
-  printf("|-----|----------------------|\n");
-  for (int i = 0; i < *task_num; i++){
-      printf("| %-3d | %-20s |\n",(*tasks)[i].id,(*tasks)[i].task);
-  }
-  scanf("%d",&arr[1]);
+  view_tasks(tasks, task_num, NULL, subjects, num_subjects);
+  arr[1] = read_int_input("Enter the (No:) of the task: ", 1, *task_num) - 1;
   arr[0] = (int)duration/60;
-  getchar();
-
+  
   int adx = -1;
   for (int i = 0; i < *task_num; i++){
     if ((*tasks)[i].id == arr[1]){
@@ -92,8 +66,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration){
   if (rc) return -1;
   (*tasks)[adx].observed_mins += duration;
 
-  printf("Did you finish the task ? (1 if yes)\n");
-  scanf("%d",&fin_task);
+  fin_task = read_int_input("Did you finish the task ? (1 if yes)", 0, 1);
 
   if (fin_task){
     rc = sql_command_exec(db, "tasks", complete_task, &arr[1], 1, NULL, NULL);
@@ -155,8 +128,7 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
     }
     printf("Enter 3 to go back to menu\n");
     printf("Enter 4 to increment distracted count\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 4);
 
     if (user_input == 1 && *in_study == 0){
       start = time(NULL);
@@ -172,7 +144,7 @@ int study_menu(sqlite3* db, int* in_study, int* study_start, int* study_stop, in
         fprintf(stderr, "Study session insert failed");
         return 1;
       }
-      rc = get_study_task(db, task,num_tasks, *study_stop - *study_start);
+      rc = get_study_task(db, task,num_tasks, *study_stop - *study_start, subjects, sub_num);
       *distraction_count = 0;
     } else if (user_input == 4 && *in_study == 1){
       (*distraction_count)++;
