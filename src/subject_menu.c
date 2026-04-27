@@ -79,8 +79,7 @@ int subjects_menu(sqlite3*db, int* in_study, Subjects** subjects, int* num_subje
     printf("Enter 2 to add a subject\n");
     printf("Enter 3 to delete a subject\n");
     printf("Enter 4 to return to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 4);
 
     if (user_input == 1){
       view_subjects(subjects, num_subjects, in_study);
