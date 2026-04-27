@@ -139,10 +139,6 @@ int first_time_data(sqlite3* db){
   arr[3] = read_int_input("Enter sleep quality: ", 1, 5);
   arr[4] = read_int_input("Enter mood: ", 1, 5);
   arr[5] = read_int_input("Enter energy: ", 1, 5);
-
-  printf();
-  scanf("%lf", &amount);
-  printf("\n");
   amount = read_double_input("Enter your bank balance: ", 1.0, 600000000);
   arr[6] = (int)round(amount * 100);
   arr[7] = read_int_input("Enter how many subjects do you want: ", 1, 10);
