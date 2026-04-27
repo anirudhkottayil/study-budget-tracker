@@ -122,8 +122,7 @@ int income_menu(sqlite3* db, int* in_study){
     printf("Enter 2 to insert an income log\n");
     printf("Enter 3 to update an income log\n");
     printf("Enter 4 to go back to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 4);
 
     if (user_input == 1){
       int count_logs = count_income(db);
