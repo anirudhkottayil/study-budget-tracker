@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "subject_menu.h"
+#include "utils.h"
 #include "db.h"
 #include "sql_commands.h"
 
@@ -64,18 +65,7 @@ int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name)
   return 0;
 }
 
-int view_subjects(Subjects** subjects, int* num_subjects, int* in_study){
-  if (*in_study){
-    printf("IN STUDY SESH\n");
-  }
 
-  printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
-  printf("|-----|----------------------|\n");
-  for (int i = 0; i < *num_subjects; i++){
-      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
-  }
-  return 0;
-}
 
 
 int subjects_menu(sqlite3*db, int* in_study, Subjects** subjects, int* num_subjects){
@@ -90,14 +80,10 @@ int subjects_menu(sqlite3*db, int* in_study, Subjects** subjects, int* num_subje
     printf("Enter 2 to add a subject\n");
     printf("Enter 3 to delete a subject\n");
     printf("Enter 4 to return to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 4);
 
     if (user_input == 1){
-      rc = view_subjects(subjects, num_subjects, in_study);
-      if (rc) {
-        return 1;
-      }
+      view_subjects(subjects, num_subjects, in_study);
     } else if (user_input == 2){
       char subject[50];
       printf("Enter the name of the subject you want to add: ");

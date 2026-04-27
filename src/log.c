@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +8,8 @@
 #include "db.h"
 #include "expense_menu.h"
 #include "sql_commands.h"
+#include "utils.h"
+#include "constants.h"
 
 
 char* check_new_day(sqlite3* db){
@@ -29,109 +32,43 @@ char* check_new_day(sqlite3* db){
 }
 
 void get_daily_log_eod(int arr[], char *notes) {
-  printf("Eat out meals (0-3): ");
-  scanf("%d", &arr[0]);
-  printf("\n");
-
-  printf("Home cooked? (1 = yes, 0 = no): ");
-  scanf("%d", &arr[1]);
-  printf("\n");
-
-  printf("Steps: ");
-  scanf("%d", &arr[2]);
-  printf("\n");
-
-  printf("Outside time (mins): ");
-  scanf("%d", &arr[3]);
-  printf("\n");
-
-  printf("Screen time (mins): ");
-  scanf("%d", &arr[4]);
-  printf("\n");
-
-  printf("Exercise? (1 = yes, 0 = no): ");
-  scanf("%d", &arr[5]);
-  printf("\n");
-
-  printf("Caffeine drinks: ");
-  scanf("%d", &arr[6]);
-  printf("\n");
-
-  printf("Stress (1-5): ");
-  scanf("%d", &arr[7]);
-  printf("\n");
-
-  printf("Productive feel (1-5): ");
-  scanf("%d", &arr[8]);
-  printf("\n");
-
-  getchar();
+  arr[0] = read_int_input("Eat out meals (0-3): ", 0, 3);
+  arr[1] = read_int_input("Home cooked? (1 = yes, 0 = no): ", 0, 1);
+  arr[2] = read_int_input("Steps: ", 1, 65000);
+  arr[3] = read_int_input("Outside time (mins): ", 0, 1080);
+  arr[4] = read_int_input("Screen time (mins): ", 0, 1080);
+  arr[5] = read_int_input("Exercise? (1 = yes, 0 = no): ", 0, 1);
+  arr[6] = read_int_input("Caffeine drinks: ", 0, 5);
+  arr[7] = read_int_input("Stress (1-5): ", 0, 5);
+  arr[8] = read_int_input("Enter productive feel: ", 1, 5);
   printf("Notes: ");
   fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
   printf("\n");
 }
 
-void get_expense_input(int arr[], char *notes) {
-    const char *categories[] = {
-        "Food", "Transport", "Groceries", "Utilities", "Rent",
-        "Health", "Education", "Entertainment", "Clothing", "Other"
-    };
-    const char *recurrence_str[] = { "One-off", "Weekly", "Fortnightly", "Monthly" };
-    const char *payment_str[]    = { "Cash", "Card", "Tap" };
+void get_expense_input(int* arr, char *notes) {
+  int cat_num = print_category();
+  arr[0] = read_int_input("Enter category: ", 0, cat_num);
+  double amount = read_double_input("Enter amount (e.g. 15.00): ", 1.0, 10000000.0);
+  arr[1] = (int)round(amount * 100);
+  arr[2] = read_int_input("Enter need score (1-5): ", 1, 5);
+  arr[3] = read_int_input("Enter want score (1-5): ", 1, 5);
+  double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
+  arr[4] = (int)round(importance * 100);
+  int rec_num = print_recurrence();
+  arr[5] = read_int_input("Enter recurrence: ", 0, rec_num);
+  arr[6] = read_int_input("Planned? (1 = yes, 0 = no): ", 0, 1);
+  int pay_num = print_payment();
+  arr[7] = read_int_input("Enter payment method: ", 0, pay_num);
 
-    printf("| %-3s | %-15s |\n", "ID", "CATEGORY");
-    printf("|-----|------------------|\n");
-    for (int i = 0; i < 10; i++)
-        printf("| %-3d | %-15s |\n", i, categories[i]);
-    printf("Enter category: ");
-    scanf("%d", &arr[0]);
-    printf("\n");
+  arr[8] = (int)time(NULL);  // time_of_purchase
 
-    double amount;
-    printf("Enter amount (e.g. 15.00): ");
-    scanf("%lf", &amount);
-    arr[1] = (int)round(amount * 100);
-    printf("\n");
-
-    printf("Enter need score (1-5): ");
-    scanf("%d", &arr[2]);
-    printf("\n");
-
-    printf("Enter want score (1-5): ");
-    scanf("%d", &arr[3]);
-    printf("\n");
-
-    double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
-    arr[4] = (int)round(importance * 100);
-
-    printf("| %-3s | %-10s |\n", "ID", "RECURRENCE");
-    printf("|-----|------------|\n");
-    for (int i = 0; i < 4; i++)
-        printf("| %-3d | %-10s |\n", i, recurrence_str[i]);
-    printf("Enter recurrence: ");
-    scanf("%d", &arr[5]);
-    printf("\n");
-
-    printf("Planned? (1 = yes, 0 = no): ");
-    scanf("%d", &arr[6]);
-    printf("\n");
-
-    printf("| %-3s | %-10s |\n", "ID", "PAYMENT");
-    printf("|-----|------------|\n");
-    for (int i = 0; i < 3; i++)
-        printf("| %-3d | %-10s |\n", i, payment_str[i]);
-    printf("Enter payment method: ");
-    scanf("%d", &arr[7]);
-    printf("\n");
-
-    arr[8] = (int)time(NULL);  // time_of_purchase
-
-    getchar();
-    printf("Notes: ");
-    fgets(notes, 50, stdin);
-    notes[strcspn(notes, "\n")] = '\0';
-    printf("\n");
+  getchar();
+  printf("Notes: ");
+  fgets(notes, 50, stdin);
+  notes[strcspn(notes, "\n")] = '\0';
+  printf("\n");
 
 }
 
@@ -165,7 +102,7 @@ int get_expense_loop(ExpenseEntry** entries, int* count){
 }
 
 int first_start_day(sqlite3* db, char* date){
-  int daily_arr[9]; int exp_arr[9]; char log_notes[50]; char exp_notes[50]; int rc;
+  int daily_arr[9]; char log_notes[50]; int rc;
 
   printf("Enter previous days daily log and expenses\n");
   get_daily_log_eod(daily_arr, log_notes);
@@ -197,34 +134,14 @@ int check_first_time_run(){
 
 int first_time_data(sqlite3* db){
   int arr[8]; double amount;
-  printf("Enter time you went to bed (24hr format): ");
-  scanf("%d", &arr[0]);
-  printf("\n");
-  printf("Enter time you woke up (24hr format): ");
-  scanf("%d", &arr[1]);
-  printf("\n");
-  printf("Enter sleep quality (1 to 5): ");
-  scanf("%d", &arr[3]);
-  printf("\n");
-  printf("Enter mood (1 to 5): ");
-  scanf("%d", &arr[4]);
-  printf("\n");
-  printf("Enter energy (1 to 5): ");
-  scanf("%d", &arr[5]);
-  printf("\n");
-  printf("Enter your bank balance: ");
-  scanf("%lf", &amount);
-  printf("\n");
-  arr[7] = 0;
-  while (arr[7] <= 0){
-    printf("Enter how many subjects do you want: ");
-    scanf("%d", &arr[7]);
-    printf("\n");
-    if (arr[7] == 0){
-      printf("You cant study with 0 subjects. Atleast 1 please.\n");
-    }
-  }
-  getchar();
+  arr[0] = read_int_input("Enter sleep time (24hr format): ", 0000, 2359);
+  arr[1] = read_int_input("Enter wake time (24hr format): ", 0000, 2359);
+  arr[3] = read_int_input("Enter sleep quality: ", 1, 5);
+  arr[4] = read_int_input("Enter mood: ", 1, 5);
+  arr[5] = read_int_input("Enter energy: ", 1, 5);
+  amount = read_double_input("Enter your bank balance: ", 1.0, 600000000);
+  arr[6] = (int)round(amount * 100);
+  arr[7] = read_int_input("Enter how many subjects do you want: ", 1, 10);
   char** sub_arr = malloc (arr[7]* sizeof(char*));
   for (int i = 0; i < arr[7]; i++){
     sub_arr[i] = malloc(50 * sizeof(char));
@@ -247,7 +164,6 @@ int first_time_data(sqlite3* db){
       duration = wake_total - sleep_total;
   }
   arr[2] = duration;
-  arr[6] = (int)round(amount * 100);
   first_write_into_db(db, arr, sub_arr);
   for (int i = 0; i < arr[7]; i++) free(sub_arr[i]);
   free(sub_arr);

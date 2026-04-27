@@ -1,26 +1,24 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include <stdlib.h>
 #include "income_menu.h"
 #include "db.h"
 #include "sql_commands.h"
 #include "mapper_func.h"
+#include "utils.h"
+#include "constants.h"
 
-int get_income_input(int arr[], char *notes) {
-  const char *sources[] = { "Salary", "Freelance", "Transfer", "Other" };
-
-  printf("Enter amount in cents (e.g. 150000 = $1500.00): ");
-  scanf("%d", &arr[0]);
+int get_income_input(int* arr, char *notes) {
+  double amount = read_double_input("Enter amount: ", 1.0, 2147483647.0);
+  arr[0] = (int)round(amount * 100);
 
   printf("| %-3s | %-10s |\n", "ID", "SOURCE");
   printf("|-----|------------|\n");
   for (int i = 0; i < 4; i++)
       printf("| %-3d | %-10s |\n", i, sources[i]);
-  printf("Enter source: ");
-  scanf("%d", &arr[1]);
-
-  getchar();
+  arr[1] = read_int_input("Enter source: ", 1, 4) - 1;
   printf("Enter notes: ");
   fgets(notes, 50, stdin);
   notes[strcspn(notes, "\n")] = '\0';
@@ -85,14 +83,18 @@ void print_events(IncomeEvent* events, int count, int* in_study){
       printf("└─────────────────────────────────────┘\n");
   }
 }
-
-int view_income_logs(sqlite3* db, int input, int* in_study){
+int count_income(sqlite3* db){
   int db_rows = count_rows(db, count_income_events);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for income logs\n");
-    return 1;
+    return -1;
   }
-  int arr[1]= {(input > db_rows) ? db_rows : input};
+
+  return db_rows;
+}
+
+int view_income_logs(sqlite3* db, int input, int* in_study){
+  int arr[1] = {input};
   IncomeEvent* event = malloc(arr[0] * sizeof(IncomeEvent));
   int rc = get_rows(db, get_income_events,(void*) event, map_income_event , arr, 1) ;
   if (rc == -1){
@@ -120,17 +122,19 @@ int income_menu(sqlite3* db, int* in_study){
     printf("Enter 2 to insert an income log\n");
     printf("Enter 3 to update an income log\n");
     printf("Enter 4 to go back to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 4);
 
     if (user_input == 1){
-      printf("How many previous days income logs do you want to see : ");
-      scanf("%d", &if_input);
-      getchar();
-      printf("\n");
-      rc = view_income_logs(db, if_input, in_study);
-      if (rc) {
-        return 1;
+      int count_logs = count_income(db);
+      if (count_logs == -1) return 1;
+      if (count_logs == 0){
+        printf("No logs to show\n");
+      } else {
+        if_input = read_int_input("How many previous days income logs do you want to see : ", 1, count_logs);
+        rc = view_income_logs(db, if_input, in_study);
+        if (rc) {
+          return 1;
+        }
       }
     } else if (user_input == 2){
       rc = insert_event(db,in_study);
@@ -138,20 +142,18 @@ int income_menu(sqlite3* db, int* in_study){
         return 1;
       }
     } else if (user_input == 3){
-      char date[11];
-      printf("Enter the date of the income event you want to update: ");
-      scanf("%10s", date);
-      getchar();
-      date[10] = '\0';
-      printf("\n");
+      char* date = read_date_input("Enter the date of the income event you want to update: ");
       rc = update_event(db, date, in_study);
       if (rc == 1) {
+        free(date);
         printf("Try again ?\n");
       } else if (rc == -1){
+        free(date);
         return 1;
       } else {
         printf("Success!\n");
         rc = bank_snapshot(db, date);
+        free(date);
         if (rc) return 1;
       }
 
