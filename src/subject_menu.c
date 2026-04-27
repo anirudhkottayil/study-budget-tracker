@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "subject_menu.h"
+#include "utils.h"
 #include "db.h"
 #include "sql_commands.h"
 
