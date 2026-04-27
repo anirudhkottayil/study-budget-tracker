@@ -32,7 +32,9 @@ int get_study_info(int* arr,Subjects** subjects, int* sub_num, char notes[]){
   arr[5] = read_int_input("How was the energy before the sesh (1 to 5)",1,5);
   arr[6] = read_int_input("How was the focus during the sesh (1 to 5)",1,5);
   view_subjects(subjects, sub_num, NULL);
-  arr[7] = read_int_input("Which subject did you study (No:)", 1, *sub_num) - 1;
+  int sub_index = read_int_input("Which subject did you study (No:)", 1, *sub_num) - 1;
+ 
+  arr[7] = (*subjects)[sub_index].id;
   int env = print_environment();
   arr[8] = read_int_input("Enter the ID of the environment", 0, env);
   printf("Enter any notes you have on the session\n");
