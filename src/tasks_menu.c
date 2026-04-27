@@ -68,12 +68,9 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study,Subject
     return 0;
   }
   view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);
-  printf("Which No: task did you work on\n");
   int index = read_int_input("Which No: task did you work on", 1, *num_tasks);
   arr[1] = (*tasks)[index-1].id;
-  printf("Enter time you spent on the task right now (in mins): ");
-  scanf("%d", &arr[0]);
-  getchar();
+  arr[0] = read_int_input("Enter time you spent on the task right now (in mins): ", 1, 1080);
 
   rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
 
@@ -110,18 +107,8 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** s
 
 
   int est[2], rc;
-  est[0] = 0;
-  printf("Enter estimated minutes for the task: ");
-  scanf("%d", &est[0]);
-  getchar();
-  printf("\n");
-  
+  est[0] = read_int_input("Enter estimated minutes for the task: ", 1, 1080);
   view_subjects(subjects, num_subjects, in_study);
-  printf("| %-3s | %-20s |\n", "ID", "SUBJECT");
-  printf("|-----|----------------------|\n");
-  printf("| %-3d | %-20s |\n", 0, "None");
-  for (int i = 0; i < *num_subjects; i++)
-      printf("| %-3d | %-20s |\n", (*subjects)[i].id, (*subjects)[i].subject);
   int index = read_int_input("Enter subject ID (-1 for none): ", 1, *num_subjects);
   est[1] = (*subjects)[index-1].id;
   rc = sql_command_exec(db, "tasks", insert_task, est, 2, name, NULL);
@@ -161,8 +148,7 @@ int tasks_menu(sqlite3* db, int* in_study, Task** tasks, int* num_tasks, Subject
     printf("Enter 3 to update time in a task\n");
     printf("Enter 4 to mark a task complete\n");
     printf("Enter 5 to return to main menu\n");
-    scanf("%d", &user_input);
-    getchar();
+    user_input = read_int_input("Enter your choice: ", 1, 5);
 
     if (user_input == 1){
       view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);
