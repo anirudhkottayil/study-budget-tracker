@@ -198,7 +198,7 @@ int initialize_db(sqlite3 **db){
   } else {return 0;}
 }
 
-int sql_command_exec(sqlite3 *db, char* tablename, const char* command, int* arr, int arr_length, char* text, char* date){
+int sql_command_exec(sqlite3 *db, const char* command, int* arr, int arr_length, char* text, char* date){
   sqlite3_stmt *ppStmt = NULL;
   const char *pZtail = NULL;
   const char* sql = command;

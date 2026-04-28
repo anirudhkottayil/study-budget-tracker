@@ -106,7 +106,8 @@ int first_start_day(sqlite3* db, char* date){
 
   printf("Enter previous days daily log and expenses\n");
   get_daily_log_eod(daily_arr, log_notes);
-  sql_command_exec(db, "daily_log", update_eod_log, daily_arr, 9, log_notes, date);
+  rc = sql_command_exec(db, update_eod_log, daily_arr, 9, log_notes, date);
+  if (rc) return 1;
   int count = 4;
   ExpenseEntry *entry = malloc(count * sizeof(ExpenseEntry));
   rc = get_expense_loop(&entry, &count);

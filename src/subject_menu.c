@@ -18,7 +18,7 @@ int delete_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* na
 
   if (del_idx == -1) return -1;  
 
-  rc = sql_command_exec(db,"subjects", delete_subject_sql, NULL, 0, name, NULL);
+  rc = sql_command_exec(db, delete_subject_sql, NULL, 0, name, NULL);
   if (rc) {
     fprintf(stderr, "Delete subject failed db\n");
     return 1;
@@ -50,7 +50,7 @@ int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name)
 
   if (add_idx != -1) return -1;
 
-  sql_command_exec(db,"subjects", insert_subjects, NULL, 0, name, NULL);
+  sql_command_exec(db, insert_subjects, NULL, 0, name, NULL);
   Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects + 1));
   if (temp_ptr == NULL){
     fprintf(stderr, "Realloc subjects failed\n");

@@ -11,7 +11,7 @@
 int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int* task_id, Subjects** subjects, int* num_subjects){
   int rc; int fin_task; int arr[1];
   if (task_id != NULL){
-    rc = sql_command_exec(db, "tasks", complete_task, task_id, 1, NULL, NULL);
+    rc = sql_command_exec(db, complete_task, task_id, 1, NULL, NULL);
     if (rc) return -1;
     for (int i = 0; i < *num_tasks; i++){
       if ((*tasks)[i].id == *task_id){
@@ -37,7 +37,7 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
   arr[0] = (*tasks)[index-1].id;
   fin_task = read_int_input("Did you finish the task ? (1 if yes)", 0, 1);
   if (fin_task){
-    rc = sql_command_exec(db, "tasks", complete_task, arr, 1, NULL, NULL);
+    rc = sql_command_exec(db, complete_task, arr, 1, NULL, NULL);
    if (rc) return -1;
     for (int i = 0; i < *num_tasks; i++){
       if ((*tasks)[i].id == arr[0]){
@@ -72,7 +72,7 @@ int update_task(sqlite3* db, Task** tasks, int* num_tasks, int* in_study,Subject
   arr[1] = (*tasks)[index-1].id;
   arr[0] = read_int_input("Enter time you spent on the task right now (in mins): ", 1, 1080);
 
-  rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
+  rc = sql_command_exec(db, update_task_time, arr, 2, NULL, NULL);
 
   if (rc) {
     fprintf(stderr, "Update task time failed\n");
@@ -111,7 +111,7 @@ int add_task(sqlite3* db, Task** tasks, int* num_tasks, char* name, Subjects** s
   view_subjects(subjects, num_subjects, in_study);
   int index = read_int_input("Enter subject ID (-1 for none): ", 1, *num_subjects);
   est[1] = (*subjects)[index-1].id;
-  rc = sql_command_exec(db, "tasks", insert_task, est, 2, name, NULL);
+  rc = sql_command_exec(db, insert_task, est, 2, name, NULL);
   if (rc){
     fprintf(stderr, "Insert task failed\n");
     return 1;

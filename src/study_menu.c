@@ -63,7 +63,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration, Subje
 
   if (adx == -1) return 1;
 
-  rc = sql_command_exec(db, "tasks", update_task_time, arr, 2, NULL, NULL);
+  rc = sql_command_exec(db, update_task_time, arr, 2, NULL, NULL);
 
   if (rc) return -1;
   (*tasks)[adx].observed_mins += duration;
@@ -71,7 +71,7 @@ int get_study_task(sqlite3* db, Task** tasks, int* task_num, int duration, Subje
   fin_task = read_int_input("Did you finish the task ? (1 if yes)", 0, 1);
 
   if (fin_task){
-    rc = sql_command_exec(db, "tasks", complete_task, &arr[1], 1, NULL, NULL);
+    rc = sql_command_exec(db, complete_task, &arr[1], 1, NULL, NULL);
     if (rc) return -1;
     for (; adx < *task_num; adx++){
       if (adx == (*task_num-1)) break;
@@ -105,7 +105,7 @@ int post_study_session(sqlite3*db, int* study_start, int* study_stop, int* distr
   if (rc){
     return 1;
   }
-  int insert_result = sql_command_exec(db, "study_sessions", insert_study_session, arr, 10, notes, NULL);
+  int insert_result = sql_command_exec(db, insert_study_session, arr, 10, notes, NULL);
   if (insert_result){
     fprintf(stderr, "Failed to insert into study sessions");
     return 1;

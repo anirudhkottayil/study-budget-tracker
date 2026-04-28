@@ -40,7 +40,7 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   notes[strcspn(notes, "\n")] = '\0';
   printf("\n");
 
-  int rc = sql_command_exec(db, "expenses", update_expense, arr, 9, notes, date);
+  int rc = sql_command_exec(db, update_expense, arr, 9, notes, date);
   if (rc){
     fprintf(stderr, "Error updating the account\n");
     return 1;

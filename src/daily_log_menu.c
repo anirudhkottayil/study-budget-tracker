@@ -107,7 +107,7 @@ int update_log(sqlite3* db, char* date, int* in_study){
   }
   arr[2] = duration;
 
-  rc = sql_command_exec(db, "daily_log", update_daily_log, arr, 15, temp_notes, date);
+  rc = sql_command_exec(db, update_daily_log, arr, 15, temp_notes, date);
   if (rc){
     fprintf(stderr, "Error updating the log\n");
     return 1;

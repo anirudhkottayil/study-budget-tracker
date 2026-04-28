@@ -34,7 +34,7 @@ int update_event(sqlite3* db, char* date, int* in_study){
 
   get_income_input(arr, notes);
   
-  rc = sql_command_exec(db, "income_events", update_income, arr, 2, notes, date);
+  rc = sql_command_exec(db, update_income, arr, 2, notes, date);
   if (rc){
     fprintf(stderr, "income update failed\n");
     return -1;
@@ -54,7 +54,7 @@ int insert_event(sqlite3* db, int* in_study){
 
   get_income_input(arr, notes);
 
-  rc = sql_command_exec(db, "income_events", insert_income, arr, 2, notes, NULL);
+  rc = sql_command_exec(db, insert_income, arr, 2, notes, NULL);
   if (rc) return 1;  
   char date[11];
   time_t t = time(NULL);
