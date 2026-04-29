@@ -57,7 +57,7 @@ void print_expenses(Expense *expenses, int count, int* in_study) {
     }
 }
 int count_accounts(sqlite3* db){
-  int db_rows = count_rows(db, count_expenses);
+  int db_rows = count_rows(db, count_expenses, NULL);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for expenses\n");
     return -1;

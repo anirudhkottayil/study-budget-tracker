@@ -67,7 +67,7 @@ typedef void (Rowmapper) (sqlite3_stmt* ppStmt, void* arr, int index);
 
 int initialize_db(sqlite3 **db);
 int first_write_into_db(sqlite3* db, int arr[], char** sub_arr);
-int count_rows(sqlite3* db, const char* statement);
+int count_rows(sqlite3* db, const char* statement, char* date);
 int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, int* params, int param_length);
 int sql_command_exec(sqlite3 *db, const char* command, int* arr,int arr_length, char* text, char* date);
 int first_run(sqlite3 *db);
@@ -75,4 +75,6 @@ int get_row_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper
 int get_prev_date(sqlite3* db, char* prev_date);
 int expense_entry(sqlite3* db, ExpenseEntry* entries, int count, char* date);
 int bank_snapshot(sqlite3* db, char* date);
+int update_by_id(sqlite3* db, const char* command, int* arr, int arr_length, char* text, int id);
+int get_rows_using_date(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, char* date);
 #endif

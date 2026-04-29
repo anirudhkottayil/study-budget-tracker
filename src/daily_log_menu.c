@@ -47,7 +47,7 @@ void print_logs(Daily_logs* log, int num_logs, int* in_study){
 int count_logs(sqlite3* db){
 
   int arr[1];
-  int db_rows = count_rows(db, count_daily_logs);
+  int db_rows = count_rows(db, count_daily_logs, NULL);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for daily logs\n");
     return -1;
