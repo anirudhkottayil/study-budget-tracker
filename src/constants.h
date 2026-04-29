@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define wantScore 0.3
+#define needScore 0.7
 
 extern const char* categories[];
 extern const char* recurrence_str[];
