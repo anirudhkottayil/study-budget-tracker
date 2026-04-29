@@ -16,29 +16,7 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   }
   int arr[9];
   char notes[500];
-
-  int cat_index = print_category();
-  arr[0] = read_int_input("Enter category: ", 0, cat_index);
-  double amount = read_double_input("Enter amount (e.g. 15.00): ", 1.0, 10000000.0);
-  arr[1] = (int)round(amount * 100);
-  arr[2] = read_int_input("Enter need score (1-5): ", 1, 5);
-  arr[3] = read_int_input("Enter want score (1-5): ", 1, 5);
-  // importance computed from need and want, scaled to int (*100)
-  // store as int here, cast to double on insert
-  // printf("Enter importance (0.00 - 1.00, e.g. 75 = 0.75): ");
-  double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
-  arr[4] = (int)round(importance * 100);
-  int rec_index = print_recurrence();
-  arr[5] = read_int_input("Enter recurrence: ", 0, rec_index);
-  arr[6] = read_int_input("Planned? (1 = yes, 0 = no): ", 0, 1);
-  int pay_index = print_payment();
-  arr[7] = read_int_input("Enter payment method: ", 0, pay_index);
-  arr[8] = (int)time(NULL);  // time_of_purchase
-
-  printf("Enter notes: ");
-  fgets(notes, 500, stdin);
-  notes[strcspn(notes, "\n")] = '\0';
-  printf("\n");
+  get_expense_input(arr, notes);
 
   int rc = sql_command_exec(db, update_expense, arr, 9, notes, date);
   if (rc){

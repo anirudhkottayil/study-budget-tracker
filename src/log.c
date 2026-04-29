@@ -6,10 +6,10 @@
 #include <time.h>
 #include "log.h"
 #include "db.h"
-#include "expense_menu.h"
+// #include "expense_menu.h"
 #include "sql_commands.h"
 #include "utils.h"
-#include "constants.h"
+// #include "constants.h"
 
 
 char* check_new_day(sqlite3* db){
@@ -47,30 +47,6 @@ void get_daily_log_eod(int arr[], char *notes) {
   printf("\n");
 }
 
-void get_expense_input(int* arr, char *notes) {
-  int cat_num = print_category();
-  arr[0] = read_int_input("Enter category: ", 0, cat_num);
-  double amount = read_double_input("Enter amount (e.g. 15.00): ", 1.0, 10000000.0);
-  arr[1] = (int)round(amount * 100);
-  arr[2] = read_int_input("Enter need score (1-5): ", 1, 5);
-  arr[3] = read_int_input("Enter want score (1-5): ", 1, 5);
-  double importance = ((arr[2] * needScore) + (arr[3] * wantScore)) / 5;
-  arr[4] = (int)round(importance * 100);
-  int rec_num = print_recurrence();
-  arr[5] = read_int_input("Enter recurrence: ", 0, rec_num);
-  arr[6] = read_int_input("Planned? (1 = yes, 0 = no): ", 0, 1);
-  int pay_num = print_payment();
-  arr[7] = read_int_input("Enter payment method: ", 0, pay_num);
-
-  arr[8] = (int)time(NULL);  // time_of_purchase
-
-  getchar();
-  printf("Notes: ");
-  fgets(notes, 50, stdin);
-  notes[strcspn(notes, "\n")] = '\0';
-  printf("\n");
-
-}
 
 int get_expense_loop(ExpenseEntry** entries, int* count){
   int capacity = *count;
