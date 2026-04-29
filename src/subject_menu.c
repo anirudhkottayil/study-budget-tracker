@@ -27,14 +27,19 @@ int delete_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* na
   for (int i = del_idx; i < *num_subjects - 1; i++){
       (*subjects)[i] = (*subjects)[i + 1];
   }
-
-  Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects - 1));
-  if (temp_ptr == NULL){
-    fprintf(stderr, "Realloc subjects failed\n");
-    return 1;
-  }
-  *subjects = temp_ptr;
   *num_subjects = *num_subjects - 1;
+  if (*num_subjects == 0) {
+    free(*subjects);
+    *subjects = NULL;
+  } else {
+    Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects));
+    if (temp_ptr == NULL){
+      fprintf(stderr, "Realloc subjects failed\n");
+      return 1;
+    }
+    *subjects = temp_ptr;
+  }
+
   return 0;
 }
 

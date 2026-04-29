@@ -28,8 +28,8 @@ int main(){
     if (rc) { return 1; }
   }
   int num_subjects = count_rows(db, count_subjects);
-  Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
-  rc = get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
+  Subjects* subjects = (num_subjects == 0) ? NULL : malloc(num_subjects * sizeof(Subjects));
+  rc = (num_subjects == 0) ? 0 : get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
   if (rc == -1){
     sqlite3_close(db);
     free(subjects);
