@@ -112,6 +112,10 @@ int update_log(sqlite3* db, char* date, int* in_study){
     fprintf(stderr, "Error updating the log\n");
     return 1;
   }
+  if (sqlite3_changes(db) == 0) {
+    printf("No record found for date: %s\n", date);
+    return 1;
+  }
   
   return 0;
 }
