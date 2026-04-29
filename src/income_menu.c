@@ -31,7 +31,7 @@ int view_income_date(sqlite3* db, char* date) {
   int rows = count_rows(db, "COUNT * FROM INCOME_EVENTS WHERE DATE = ?;", date);
   if (rows == 0) {return 0;}
   IncomeEvent* events = malloc(rows * sizeof(IncomeEvent));
-  rc = get_rows_using_date(db, "SELECT * FROM INCOME EVENTS WHERE DATE = ?;", events, map_income_event, date);
+  rc = get_rows_using_date(db, "SELECT * FROM INCOME_EVENTS WHERE DATE = ?;", events, map_income_event, date);
   if (rc) {
     fprintf(stderr, "Error getting income rows from db\n");
     free(events);
