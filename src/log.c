@@ -15,6 +15,7 @@
 char* check_new_day(sqlite3* db){
   char date_today[11];
   char* prev_date = malloc(11*sizeof(char));
+  prev_date[0] = '\0';
   int rc = get_prev_date(db, prev_date);
   if (rc){
     free(prev_date);
@@ -113,6 +114,7 @@ int first_time_data(sqlite3* db){
   int arr[8]; double amount;
   arr[0] = read_int_input("Enter sleep time (24hr format): ", 0000, 2359);
   arr[1] = read_int_input("Enter wake time (24hr format): ", 0000, 2359);
+  //arr[2] computed below
   arr[3] = read_int_input("Enter sleep quality: ", 1, 5);
   arr[4] = read_int_input("Enter mood: ", 1, 5);
   arr[5] = read_int_input("Enter energy: ", 1, 5);
