@@ -51,6 +51,9 @@ int update_event(sqlite3* db, char* date, int* in_study){
 
 int insert_event(sqlite3* db, int* in_study){
   int rc = 1; int arr[2]; char notes[50];
+  if (*in_study == 1) {
+    printf("IN STUDY SESSION\n");
+  }
 
   get_income_input(arr, notes);
 
@@ -137,7 +140,7 @@ int income_menu(sqlite3* db, int* in_study){
         }
       }
     } else if (user_input == 2){
-      rc = insert_event(db,in_study);
+      rc = insert_event(db, in_study);
       if (rc) {
         return 1;
       }
