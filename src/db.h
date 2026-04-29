@@ -67,10 +67,6 @@ typedef void (Rowmapper) (sqlite3_stmt* ppStmt, void* arr, int index);
 
 int initialize_db(sqlite3 **db);
 int first_write_into_db(sqlite3* db, int arr[], char** sub_arr);
-int insert_into_db();
-int update_db();
-int show_db();
-int free_db();
 int count_rows(sqlite3* db, const char* statement);
 int get_rows(sqlite3* db, const char* statement, void* arr, Rowmapper mapper, int* params, int param_length);
 int sql_command_exec(sqlite3 *db, const char* command, int* arr,int arr_length, char* text, char* date);
