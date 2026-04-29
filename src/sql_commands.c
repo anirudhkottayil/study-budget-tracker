@@ -64,7 +64,7 @@ const char *update_expense =
     "category = ?, amount_cents = ?, need_score = ?, want_score = ?, "
     "importance = ?, recurrence = ?, planned = ?, payment_method = ?, "
     "time_of_purchase = ?, notes = ? "
-    "WHERE date = ?;";
+    "WHERE id = ?;";
 
 const char *delete_subject_sql = "DELETE FROM subjects WHERE name = ?;";
 
