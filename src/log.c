@@ -88,12 +88,12 @@ int first_start_day(sqlite3* db, char* date){
   int count = 4;
   ExpenseEntry *entry = malloc(count * sizeof(ExpenseEntry));
   rc = get_expense_loop(&entry, &count);
-  if (rc) return 1;
+  if (rc) {free(entry); return 1;}
   rc = expense_entry(db, entry, count, date);
-  if (rc) return 1;
+  if (rc) {free(entry); return 1;}
   rc = bank_snapshot(db, date);
-  if (rc) return 1;
-
+  if (rc) {free(entry); return 1;}
+  free(entry);
   return 0;
 }
 
