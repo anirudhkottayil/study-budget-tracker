@@ -74,9 +74,7 @@ int update_event(sqlite3* db, char* date, int* in_study){
 
   get_income_input(arr, notes);
   
-  rc = update_by_id(db, 
-"UPDATE income_events SET amount_cents = ?, source = ?, notes = ? WHERE id = ?;"
-, arr, 2, notes, id);
+  rc = update_by_id(db, update_income, arr, 2, notes, id);
   if (rc){
     fprintf(stderr, "income update failed\n");
     return -1;
