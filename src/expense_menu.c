@@ -135,17 +135,12 @@ int expenses_menu(sqlite3* db, int* in_study){
 
       }
     } else if (user_input == 2){
-      printf("Coming soon !\n");
-      // char date[11];
-      // printf("Enter date of the account you want to update (YYYY-MM-DD): ");
-      // scanf("%10s", date);
-      // getchar();
-      // date[10] = '\0';
-      // printf("\n");
-      // rc = update_account(db, date, in_study);
-      // if (rc) {
-      //   return 1;
-      // }
+      char* date = read_date_input("Enter date of the account you want to update (YYYY-MM-DD): ");
+      date[10] = '\0';
+      rc = update_account(db, date, in_study);
+      if (rc) {
+        return 1;
+      }
     } else if (user_input == 3){
       break;
 
