@@ -27,16 +27,16 @@ int main(){
     rc = first_time_data(db); 
     if (rc) { return 1; }
   }
-  int num_subjects = count_rows(db, count_subjects);
-  Subjects* subjects = malloc(num_subjects * sizeof(Subjects));
-  rc = get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
+  int num_subjects = count_rows(db, count_subjects, NULL);
+  Subjects* subjects = (num_subjects == 0) ? NULL : malloc(num_subjects * sizeof(Subjects));
+  rc = (num_subjects == 0) ? 0 : get_rows(db, get_subjects , (void*) subjects, map_subject, NULL, 0);
   if (rc == -1){
     sqlite3_close(db);
     free(subjects);
     return 1;
   }
 
-  int num_tasks = count_rows(db, count_tasks);
+  int num_tasks = count_rows(db, count_tasks, NULL);
   Task* tasks = (num_tasks == 0) ? NULL : malloc(num_tasks * sizeof(Task));
   rc = (num_tasks == 0) ? 0 : get_rows(db,get_incomplete_tasks, (void*) tasks, map_tasks, NULL, 0);
   if (rc == -1){

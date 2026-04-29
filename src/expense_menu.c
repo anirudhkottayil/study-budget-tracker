@@ -10,15 +10,72 @@
 #include "constants.h"
 #include "utils.h"
 
+void print_expenses(Expense *expenses, int count, int* in_study) {
+  if (*in_study){
+    printf("In Study Session\n");
+  }
+  int i = 0;
+  for (; i < count; i++) {
+    char time_buf[32];
+    time_t t = expenses[i].time_of_purchase;
+    strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", localtime(&t));
+
+    int cat = expenses[i].category;
+    int rec = expenses[i].recurrence;
+    int pay = expenses[i].payment_method;
+
+    printf("┌─────────────────────────────────────┐\n");
+    printf("   No:            %d\n", i + 1);
+    printf("│  ID:             %d\n",    expenses[i].id);
+    printf("│  Date:           %s\n",    expenses[i].date);
+    printf("│  Category:       %s\n",    (cat >= 0 && cat <= 9) ? categories[cat] : "Unknown");
+    printf("│  Amount:         $%.2f\n", expenses[i].amount_cents / 100.0);
+    printf("│  Need Score:     %d/5\n",  expenses[i].need_score);
+    printf("│  Want Score:     %d/5\n",  expenses[i].want_score);
+    printf("│  Importance:     %.2f\n",  (float) expenses[i].importance / 100);
+    printf("│  Recurrence:     %s\n",    (rec >= 0 && rec <= 3) ? recurrence_str[rec] : "Unknown");
+    printf("│  Planned:        %s\n",    expenses[i].planned ? "Yes" : "No");
+    printf("│  Payment Method: %s\n",    (pay >= 0 && pay <= 2) ? payment_str[pay]    : "Unknown");
+    printf("│  Time:           %s\n",    time_buf);
+    printf("│  Notes:          %s\n",    expenses[i].notes[0] ? expenses[i].notes : "—");
+    printf("└─────────────────────────────────────┘\n");
+  }
+}
+
+int get_id(sqlite3* db, char* date){
+  int rc;
+  int rows = count_rows(db, "COUNT * FROM EXPENSES WHERE DATE = ?;", date);
+
+  if (rows == 0) return 0;
+  Expense* accounts = malloc(rows * sizeof(Expense));
+  rc = get_rows_using_date(db, "SELECT * FROM EXPENSES WHERE DATE = ?;",accounts, map_expense , date) ;
+  if (rc == -1){
+    free(accounts);
+    fprintf(stderr, "Error getting rows for expenses\n");
+    return -1;
+  }
+  print_expenses(accounts, rows, NULL);
+  int index = read_int_input("Enter the (No:) of the expense ypu want to update: ", 1, rows) - 1;
+
+  int id = accounts[index].id;
+  free(accounts);
+  return id;
+}
+
 int update_account(sqlite3* db, char* date, int* in_study ) {
+  int arr[9]; char notes[500];
   if (*in_study){
     printf("In study session\n");
   }
-  int arr[9];
-  char notes[500];
+  
+  int id = get_id(db, date);
+  if (id == -1) return 1;
+  
+  if (id == 0) return 0;
+
   get_expense_input(arr, notes);
 
-  int rc = sql_command_exec(db, update_expense, arr, 9, notes, date);
+  int rc = update_by_id(db, update_expense, arr, 9, notes, id);
   if (rc){
     fprintf(stderr, "Error updating the account\n");
     return 1;
@@ -27,37 +84,8 @@ int update_account(sqlite3* db, char* date, int* in_study ) {
   return 0;
 }
 
-void print_expenses(Expense *expenses, int count, int* in_study) {
-  if (*in_study){
-    printf("In Study Session\n");
-  }
-    for (int i = 0; i < count; i++) {
-        char time_buf[32];
-        time_t t = expenses[i].time_of_purchase;
-        strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M", localtime(&t));
-
-        int cat = expenses[i].category;
-        int rec = expenses[i].recurrence;
-        int pay = expenses[i].payment_method;
-
-        printf("┌─────────────────────────────────────┐\n");
-        printf("│  ID:             %d\n",    expenses[i].id);
-        printf("│  Date:           %s\n",    expenses[i].date);
-        printf("│  Category:       %s\n",    (cat >= 0 && cat <= 9) ? categories[cat] : "Unknown");
-        printf("│  Amount:         $%.2f\n", expenses[i].amount_cents / 100.0);
-        printf("│  Need Score:     %d/5\n",  expenses[i].need_score);
-        printf("│  Want Score:     %d/5\n",  expenses[i].want_score);
-        printf("│  Importance:     %.2f\n",  (float) expenses[i].importance / 100);
-        printf("│  Recurrence:     %s\n",    (rec >= 0 && rec <= 3) ? recurrence_str[rec] : "Unknown");
-        printf("│  Planned:        %s\n",    expenses[i].planned ? "Yes" : "No");
-        printf("│  Payment Method: %s\n",    (pay >= 0 && pay <= 2) ? payment_str[pay]    : "Unknown");
-        printf("│  Time:           %s\n",    time_buf);
-        printf("│  Notes:          %s\n",    expenses[i].notes[0] ? expenses[i].notes : "—");
-        printf("└─────────────────────────────────────┘\n");
-    }
-}
 int count_accounts(sqlite3* db){
-  int db_rows = count_rows(db, count_expenses);
+  int db_rows = count_rows(db, count_expenses, NULL);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for expenses\n");
     return -1;
@@ -107,17 +135,12 @@ int expenses_menu(sqlite3* db, int* in_study){
 
       }
     } else if (user_input == 2){
-      printf("Coming soon !\n");
-      // char date[11];
-      // printf("Enter date of the account you want to update (YYYY-MM-DD): ");
-      // scanf("%10s", date);
-      // getchar();
-      // date[10] = '\0';
-      // printf("\n");
-      // rc = update_account(db, date, in_study);
-      // if (rc) {
-      //   return 1;
-      // }
+      char* date = read_date_input("Enter date of the account you want to update (YYYY-MM-DD): ");
+      date[10] = '\0';
+      rc = update_account(db, date, in_study);
+      if (rc) {
+        return 1;
+      }
     } else if (user_input == 3){
       break;
 

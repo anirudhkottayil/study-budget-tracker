@@ -24,12 +24,17 @@ int complete_a_task(sqlite3* db, Task** tasks, int* num_tasks,int* in_study, int
       }
     }
     (*num_tasks)--;
-    Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
-    if (tmp == NULL){
-      fprintf(stderr, "Realloc task failed\n");
-      return 1;
+    if (*num_tasks == 0) {
+      free(*tasks);
+      *tasks = NULL;
+    } else {
+      Task* tmp = realloc(*tasks, *num_tasks * sizeof(Task));
+      if (tmp == NULL){
+        fprintf(stderr, "Realloc task failed\n");
+        return 1;
+      }
+      *tasks = tmp;
     }
-    *tasks = tmp;
     return 0; 
   }
   view_tasks(tasks, num_tasks, in_study, subjects, num_subjects);

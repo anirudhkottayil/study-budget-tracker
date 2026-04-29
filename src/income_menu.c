@@ -10,6 +10,40 @@
 #include "utils.h"
 #include "constants.h"
 
+void print_income_events(IncomeEvent *events, int count) {
+    printf("%-6s %-6s %-12s %-12s %-8s\n",
+           "NO:", "ID", "DATE", "AMOUNT", "SOURCE");
+    printf("%-6s %-6s %-12s %-12s %-8s\n",
+           "------", "------", "------------", "------------", "--------");
+
+    for (int i = 0; i < count; i++) {
+        printf("%-6d %-6d %-12s %-12.2f %-8d\n",
+               i + 1,
+               events[i].id,
+               events[i].date,
+               events[i].amount_cents / 100.0,
+               events[i].source);
+    }
+}
+
+int view_income_date(sqlite3* db, char* date) {
+  int rc;
+  int rows = count_rows(db, "COUNT * FROM INCOME_EVENTS WHERE DATE = ?;", date);
+  if (rows == 0) {return 0;}
+  IncomeEvent* events = malloc(rows * sizeof(IncomeEvent));
+  rc = get_rows_using_date(db, "SELECT * FROM INCOME_EVENTS WHERE DATE = ?;", events, map_income_event, date);
+  if (rc) {
+    fprintf(stderr, "Error getting income rows from db\n");
+    free(events);
+    return -1;
+  }
+  print_income_events(events, rows);
+  int index = read_int_input("Enter the (NO:) of the income you want to update", 1, rows) - 1;
+  int id = events[index].id;
+  free(events);
+  return id;
+}
+
 int get_income_input(int* arr, char *notes) {
   double amount = read_double_input("Enter amount: ", 1.0, 2147483647.0);
   arr[0] = (int)round(amount * 100);
@@ -28,13 +62,19 @@ int get_income_input(int* arr, char *notes) {
 
 int update_event(sqlite3* db, char* date, int* in_study){
   int rc = 1; int arr[2]; char notes[50];
+
   if (*in_study){
     printf("IN STUDY SESSION\n");
   }
 
+  int id = view_income_date(db, date);
+  if (id == -1) return 1;
+  
+  if (id == 0) return 0;
+
   get_income_input(arr, notes);
   
-  rc = sql_command_exec(db, update_income, arr, 2, notes, date);
+  rc = update_by_id(db, update_income, arr, 2, notes, id);
   if (rc){
     fprintf(stderr, "income update failed\n");
     return -1;
@@ -51,13 +91,16 @@ int update_event(sqlite3* db, char* date, int* in_study){
 
 int insert_event(sqlite3* db, int* in_study){
   int rc = 1; int arr[2]; char notes[50];
+  if (*in_study == 1) {
+    printf("IN STUDY SESSION\n");
+  }
 
   get_income_input(arr, notes);
 
   rc = sql_command_exec(db, insert_income, arr, 2, notes, NULL);
   if (rc) return 1;  
   char date[11];
-  time_t t = time(NULL);
+time_t t = time(NULL);
   struct tm *tp = localtime(&t);
   sprintf(date, "%04d-%02d-%02d", tp->tm_year + 1900, tp->tm_mon + 1, tp->tm_mday);
 
@@ -84,7 +127,7 @@ void print_events(IncomeEvent* events, int count, int* in_study){
   }
 }
 int count_income(sqlite3* db){
-  int db_rows = count_rows(db, count_income_events);
+  int db_rows = count_rows(db, count_income_events, NULL);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for income logs\n");
     return -1;
@@ -137,7 +180,7 @@ int income_menu(sqlite3* db, int* in_study){
         }
       }
     } else if (user_input == 2){
-      rc = insert_event(db,in_study);
+      rc = insert_event(db, in_study);
       if (rc) {
         return 1;
       }

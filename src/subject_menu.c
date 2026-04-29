@@ -27,20 +27,25 @@ int delete_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* na
   for (int i = del_idx; i < *num_subjects - 1; i++){
       (*subjects)[i] = (*subjects)[i + 1];
   }
-
-  Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects - 1));
-  if (temp_ptr == NULL){
-    fprintf(stderr, "Realloc subjects failed\n");
-    return 1;
-  }
-  *subjects = temp_ptr;
   *num_subjects = *num_subjects - 1;
+  if (*num_subjects == 0) {
+    free(*subjects);
+    *subjects = NULL;
+  } else {
+    Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects));
+    if (temp_ptr == NULL){
+      fprintf(stderr, "Realloc subjects failed\n");
+      return 1;
+    }
+    *subjects = temp_ptr;
+  }
+
   return 0;
 }
 
 int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name){
 
-  int add_idx = -1;
+  int add_idx = -1; int rc;
   for (int i = 0; i < *num_subjects; i++){
       if (strcmp((*subjects)[i].subject, name) == 0){
           add_idx = i;
@@ -50,7 +55,8 @@ int add_subject(sqlite3* db, Subjects** subjects, int* num_subjects, char* name)
 
   if (add_idx != -1) return -1;
 
-  sql_command_exec(db, insert_subjects, NULL, 0, name, NULL);
+  rc = sql_command_exec(db, insert_subjects, NULL, 0, name, NULL);
+  if (rc) return 1;
   Subjects* temp_ptr = realloc(*subjects, sizeof(Subjects) * (*num_subjects + 1));
   if (temp_ptr == NULL){
     fprintf(stderr, "Realloc subjects failed\n");

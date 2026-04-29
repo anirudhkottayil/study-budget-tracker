@@ -47,7 +47,7 @@ void print_logs(Daily_logs* log, int num_logs, int* in_study){
 int count_logs(sqlite3* db){
 
   int arr[1];
-  int db_rows = count_rows(db, count_daily_logs);
+  int db_rows = count_rows(db, count_daily_logs, NULL);
   if ( db_rows == -1){
     fprintf(stderr, "Error getting row count for daily logs\n");
     return -1;
@@ -110,6 +110,10 @@ int update_log(sqlite3* db, char* date, int* in_study){
   rc = sql_command_exec(db, update_daily_log, arr, 15, temp_notes, date);
   if (rc){
     fprintf(stderr, "Error updating the log\n");
+    return 1;
+  }
+  if (sqlite3_changes(db) == 0) {
+    printf("No record found for date: %s\n", date);
     return 1;
   }
   
